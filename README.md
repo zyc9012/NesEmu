@@ -1,8 +1,11 @@
 ### NesEmu
+
 This is a C++ port of an NES Emulator
-Visit the original Go version from: https://github.com/fogleman/nes
+
+Visit the original Go version at: https://github.com/fogleman/nes
 
 ### Dependencies
+
     glew: http://glew.sourceforge.net/
     glfw: http://www.glfw.org/
     portaudio: http://www.portaudio.com/
