@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
-#include "Memory.h"
-#include "Console.h"
+class Memory;
+class Console;
 
 enum interruptTypes {
 	interruptNone = 1,

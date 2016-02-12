@@ -1,9 +1,9 @@
 #pragma once
 #include <stdint.h>
-#include "FilterChain.h"
 #include "BlockingQueue.h"
 class Console;
 class Cpu;
+class FilterChain;
 
 class Pulse
 {

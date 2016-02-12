@@ -1,6 +1,6 @@
 #pragma once
-#include "BlockingQueue.h"
 #include <portaudio.h>
+#include "BlockingQueue.h"
 
 class Audio
 {

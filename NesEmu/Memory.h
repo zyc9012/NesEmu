@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "Console.h"
+class Console;
 
 enum MirroringModes {
 	MirrorHorizontal = 0,

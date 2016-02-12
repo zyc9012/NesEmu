@@ -1,3 +1,5 @@
+#include <memory.h>
+#include "Cartridge.h"
 #include "Controller.h"
 #include "Console.h"
 #include "utils.h"
@@ -7,7 +9,6 @@
 #include "iNes.h"
 #include "Palette.h"
 #include "FilterChain.h"
-#include <memory.h>
 
 Console::Console(const char* path)
 {

@@ -1,9 +1,10 @@
+#include <stdio.h>
+#include <stdarg.h>
 #include "utils.h"
 #include "Mapper.h"
 #include "Mapper2.h"
 #include "Mapper4.h"
-#include <stdio.h>
-#include <stdarg.h>
+#include "Cartridge.h"
 
 Mapper* CreateMapper(Console* console)
 {

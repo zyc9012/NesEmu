@@ -1,6 +1,6 @@
 #pragma once
 #include "Mapper.h"
-#include <stdio.h>
+#include "Console.h"
 
 Mapper* CreateMapper(Console* console);
 

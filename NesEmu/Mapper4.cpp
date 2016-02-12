@@ -1,9 +1,10 @@
+#include "Mapper.h"
 #include "Mapper4.h"
 #include "Ppu.h"
 #include "Console.h"
 #include "Cpu.h"
 #include "Memory.h"
-#include <stdio.h>
+#include "Cartridge.h"
 #include "utils.h"
 
 Mapper4::Mapper4(Console* console, Cartridge* cartridge)

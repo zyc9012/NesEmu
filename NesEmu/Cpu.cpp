@@ -1,5 +1,6 @@
 #include "Cpu.h"
-#include <stdio.h>
+#include "Memory.h"
+#include "Console.h"
 
 stepInfo fakeStepInfo;
 

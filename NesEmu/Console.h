@@ -7,7 +7,7 @@ class Apu;
 class Controller;
 class Mapper;
 class Image;
-#include "Cartridge.h"
+class Cartridge;
 
 class Console
 {

@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
-#include "Console.h"
-#include "Memory.h"
-#include "Image.h"
+class Console;
+class Memory;
+class Image;
 
 class Ppu
 {

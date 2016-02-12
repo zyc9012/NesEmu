@@ -1,6 +1,9 @@
 #include "Ppu.h"
 #include "Cpu.h"
 #include "Palette.h"
+#include "Console.h"
+#include "Memory.h"
+#include "Image.h"
 
 Ppu::Ppu(Console* console)
 {

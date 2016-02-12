@@ -1,6 +1,7 @@
 #pragma once
-#include "Mapper.h"
-#include "Cartridge.h"
+#include <stdint.h>
+class Mapper;
+class Cartridge;
 
 class Mapper2 : public Mapper
 {

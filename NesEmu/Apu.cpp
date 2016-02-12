@@ -2,8 +2,8 @@
 #include "iNes.h"
 #include "Console.h"
 #include "Cpu.h"
-#include <stdio.h>
 #include "utils.h"
+#include "FilterChain.h"
 
 double frameCounterRate = CPUFrequency / 240.0;
 

@@ -1,7 +1,7 @@
+#include "Mapper.h"
 #include "Mapper2.h"
-#include <stdio.h>
+#include "Cartridge.h"
 #include "utils.h"
-
 
 Mapper2::Mapper2(Cartridge* cartridge)
 {
