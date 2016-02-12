@@ -126,14 +126,14 @@ void Ppu::Reset() {
 }
 
 uint8_t Ppu::readPalette(uint16_t address)  {
-	if ((address >= 16) && (address%4) == 0) {
+	if ((address >= 16) && (address%4 == 0)) {
 		address -= 16;
 	}
 	return paletteData[address];
 }
 
 void Ppu::writePalette(uint16_t address, uint8_t value) {
-	if ((address >= 16) && (address%4) == 0) {
+	if ((address >= 16) && (address%4 == 0)) {
 		address -= 16;
 	}
 	paletteData[address] = value;
@@ -314,7 +314,7 @@ void Ppu::writeDMA(uint8_t value) {
 		address++;
 	}
 	cpu->stall += 513;
-	if (cpu->Cycles%2 == 1) {
+	if ((cpu->Cycles%2) == 1) {
 		cpu->stall++;
 	}
 }
