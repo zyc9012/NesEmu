@@ -1,6 +1,6 @@
 ### NesEmu
 
-This is a C++ port of an NES Emulator
+This is a C++11 port of an NES Emulator
 
 Visit the original Go version at: https://github.com/fogleman/nes
 
@@ -10,7 +10,11 @@ Visit the original Go version at: https://github.com/fogleman/nes
     glfw: http://www.glfw.org/
     portaudio: http://www.portaudio.com/
 
-The dependency libraries are already compiled with Visual Studio 2015, if you
-are on other platforms, please compile them by yourself.
+The project can be nicely compiled and run on Visual Studio 2015, solutions
+on other platforms will be added soon.
 
-Some additional features are not ported yet (load/save state, screenshot, ...).
+### TODO
+
+    load/save state
+    screenshot
+    more mappers
