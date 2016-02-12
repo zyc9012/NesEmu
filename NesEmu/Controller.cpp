@@ -1,5 +1,5 @@
+#include <memory>
 #include "Controller.h"
-
 
 
 Controller::Controller()
@@ -12,10 +12,7 @@ Controller::~Controller()
 }
 
 void Controller::SetButtons(bool buttons[8]) {
-	for (int i = 0; i < 8; i++)
-	{
-		this->buttons[i] = buttons[i];
-	}
+	memcpy(this->buttons, buttons, sizeof(bool)*8);
 }
 
 uint8_t Controller::Read() {

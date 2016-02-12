@@ -67,24 +67,21 @@ bool ReadKey(GLFWwindow* window, int key) {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-bool keyPresses[8] = { false, };
-bool* ReadKeys(GLFWwindow* window, bool turbo){
-	keyPresses[ButtonA] = ReadKey(window, GLFW_KEY_Z) || (turbo && ReadKey(window, GLFW_KEY_A));
-	keyPresses[ButtonB] = ReadKey(window, GLFW_KEY_X) || (turbo && ReadKey(window, GLFW_KEY_S));
-	keyPresses[ButtonSelect] = ReadKey(window, GLFW_KEY_RIGHT_SHIFT);
-	keyPresses[ButtonStart] = ReadKey(window, GLFW_KEY_ENTER);
-	keyPresses[ButtonUp] = ReadKey(window, GLFW_KEY_UP); // GLFW_KEY_I
-	keyPresses[ButtonDown] = ReadKey(window, GLFW_KEY_DOWN); // GLFW_KEY_K
-	keyPresses[ButtonLeft] = ReadKey(window, GLFW_KEY_LEFT); // GLFW_KEY_J
-	keyPresses[ButtonRight] = ReadKey(window, GLFW_KEY_RIGHT); // GLFW_KEY_L
-	return keyPresses;
+void ReadKeys(GLFWwindow* window, bool turbo, bool* buttons){
+	buttons[ButtonA] = ReadKey(window, GLFW_KEY_Z) || (turbo && ReadKey(window, GLFW_KEY_A));
+	buttons[ButtonB] = ReadKey(window, GLFW_KEY_X) || (turbo && ReadKey(window, GLFW_KEY_S));
+	buttons[ButtonSelect] = ReadKey(window, GLFW_KEY_RIGHT_SHIFT);
+	buttons[ButtonStart] = ReadKey(window, GLFW_KEY_ENTER);
+	buttons[ButtonUp] = ReadKey(window, GLFW_KEY_I);
+	buttons[ButtonDown] = ReadKey(window, GLFW_KEY_K);
+	buttons[ButtonLeft] = ReadKey(window, GLFW_KEY_J);
+	buttons[ButtonRight] = ReadKey(window, GLFW_KEY_L);
 }
 
 void UpdateControllers(GLFWwindow* window)
 {
 	auto turbo = (console->PPU->Frame % 6) < 3;
-	auto k1 = ReadKeys(window, turbo);
-	console->Controller1->SetButtons(k1);
+	ReadKeys(window, turbo, console->Controller1->buttons);
 }
 
 void Step(GLFWwindow* window)
