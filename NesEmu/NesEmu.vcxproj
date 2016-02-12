@@ -139,6 +139,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="iNes.cpp" />
+    <ClCompile Include="Mapper1.cpp" />
     <ClCompile Include="Mapper2.cpp" />
     <ClCompile Include="Mapper4.cpp" />
     <ClCompile Include="Memory.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="iNes.h" />
     <ClInclude Include="Mapper.h" />
+    <ClInclude Include="Mapper1.h" />
     <ClInclude Include="Mapper2.h" />
     <ClInclude Include="Mapper4.h" />
     <ClInclude Include="Memory.h" />

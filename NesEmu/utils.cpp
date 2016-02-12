@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include "utils.h"
 #include "Mapper.h"
+#include "Mapper1.h"
 #include "Mapper2.h"
 #include "Mapper4.h"
 #include "Cartridge.h"
@@ -14,6 +15,8 @@ Mapper* CreateMapper(Console* console)
 	case 0:
 	case 2:
 		return new Mapper2(cartridge);
+	case 1:
+		return new Mapper1(cartridge);
 	case 4:
 		return new Mapper4(console, cartridge);
 	default:
