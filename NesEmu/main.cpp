@@ -111,7 +111,7 @@ void Step(GLFWwindow* window)
 	double remainingTime = TIME_PER_FRAME - (renderEndTime - lastTime);
 
 	if (remainingTime > 0) {
-		Sleep(remainingTime * 1000);
+		Sleep(long(remainingTime * 1000));
 	}
 
 	lastTime = glfwGetTime();
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 		}
 		else if (strcmp("-scale", argv[i]) == 0) {
 			i++;
-			scale = atof(argv[i]);
+			scale = (float)atof(argv[i]);
 		}
 		i++;
 	}
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 
 	glfwInit();
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-	GLFWwindow* window = glfwCreateWindow(256 * scale, 240 * scale, "Nes Emulator", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(int(256 * scale), int(240 * scale), "Nes Emulator", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glEnable(GL_TEXTURE_2D);
 	lastTime = glfwGetTime();

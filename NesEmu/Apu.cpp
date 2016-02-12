@@ -37,10 +37,10 @@ float tndTable [203];
 
 void initApu() {
 	for (int i = 0; i < 31; i++) {
-		pulseTable[i] = 95.52 / (8128.0/float(i) + 100);
+		pulseTable[i] = float(95.52 / (8128.0/i + 100));
 	}
 	for (int i = 0; i < 203; i++) {
-		tndTable[i] = 163.67 / (24329.0/float(i) + 100);
+		tndTable[i] = float(163.67 / (24329.0/i + 100));
 	}
 }
 

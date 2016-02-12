@@ -14,9 +14,9 @@ Filter* LowPassFilter(float sampleRate, float cutoffFreq)  {
 	auto c = sampleRate / M_PI / cutoffFreq;
 	auto a0i = 1 / (1 + c);
 	auto f = new FirstOrderFilter();
-	f->B0 = a0i;
-	f->B1 = a0i;
-	f->A1 = (1 - c) * a0i;
+	f->B0 = float(a0i);
+	f->B1 = float(a0i);
+	f->A1 = float((1 - c) * a0i);
 	return f;
 }
 
@@ -24,9 +24,9 @@ Filter* HighPassFilter(float sampleRate, float cutoffFreq) {
 	auto c = sampleRate / M_PI / cutoffFreq;
 	auto a0i = 1 / (1 + c);
 	auto f = new FirstOrderFilter();
-	f->B0 = c * a0i;
-	f->B1 = -c * a0i;
-	f->A1 = (1 - c) * a0i;
+	f->B0 = float(c * a0i);
+	f->B1 = float(-c * a0i);
+	f->A1 = float((1 - c) * a0i);
 	return f;
 }
 
