@@ -15,6 +15,11 @@ int AudioCallback(const void *inputBuffer, void *outputBuffer,
 	{
 		*out++ = channel->pop();
 	}
+
+	if (!channel->empty())
+	{
+		channel->clear();
+	}
 	return 0;
 }
 
