@@ -23,6 +23,8 @@ Audio::Audio()
         paClipOff,          /* we won't output out of range samples so don't bother clipping them */
         NULL,               /* no callback, use blocking API */
         NULL);              /* no callback, so no callback userData */
+
+	//recorder = new AudioRecorder("../record.wav");
 }
 
 Audio::~Audio()
@@ -30,6 +32,7 @@ Audio::~Audio()
 	Stop();
 	Pa_CloseStream(stream);
 	Pa_Terminate();
+	if (recorder != nullptr) recorder->Stop();
 }
 
 void Audio::Start()
@@ -43,6 +46,7 @@ void Audio::Push(float out)
 	if (bufferPtr >= FRAMES_PER_BUFFER)
 	{
 		Pa_WriteStream(stream, buffer, FRAMES_PER_BUFFER);
+		if (recorder != nullptr) recorder->WriteSamples(buffer, FRAMES_PER_BUFFER);
 		bufferPtr = 0;
 	}
 }
@@ -50,4 +54,31 @@ void Audio::Push(float out)
 void Audio::Stop()
 {
 	Pa_StopStream(stream);
+}
+
+
+AudioRecorder::AudioRecorder(const char* filename)
+{
+	auto e = fopen_s(&audioOut, filename, "wb");
+	fwrite(&wavHeader, sizeof(wavHeader), 1, audioOut);
+}
+
+AudioRecorder::~AudioRecorder()
+{
+}
+
+void AudioRecorder::WriteSamples(float* buf, int count)
+{
+	fwrite(buf, sizeof(float)*count, 1, audioOut);
+	totalSampleCount += count;
+}
+
+void AudioRecorder::Stop()
+{
+	wavHeader.ckSize1 += (totalSampleCount * sizeof(float));
+	wavHeader.sampleLength = totalSampleCount;
+	wavHeader.ckSize4 = (totalSampleCount * sizeof(float));
+	fseek(audioOut, 0, SEEK_SET);
+	fwrite(&wavHeader, sizeof(wavHeader), 1, audioOut);
+	fclose(audioOut);
 }
