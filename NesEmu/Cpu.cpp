@@ -370,20 +370,13 @@ int Cpu::Step() {
 
 	switch (interrupt) {
 	case interruptNMI:
-		//printf("IRQ-NMI\n");
 		nmi(); break;
 	case interruptIRQ:
-		//printf("IRQ-NORM\n");
 		irq(); break;
 	}
 	interrupt = interruptNone;
 
 	auto opcode = Read(PC);
-	//if (cycles == 0x15de3) {
-	//	int a = 0;////////////////////
-	//}
-	//printf("%08X: ", cycles);
-	//printf("%02X ", opcode);
 	auto mode = instructionModes[opcode];
 
 	uint16_t address, offset;
@@ -451,15 +444,6 @@ int Cpu::Step() {
 
 	InstrExecFunc e = table[opcode];
 	(this->*e)(info);
-
-	///////////
-	uint8_t flags = C << 0 | Z << 1 | I << 2 | D << 3 | B << 4 | U << 5 | V << 6 | N << 7;
-	//printf("FLAGS: %02X ", flags);
-	if (A == 0xcd) {
-		char* name = instructionNames[opcode];
-		int a = 0;////////////
-	}
-	////////////
 
 	return int(Cycles - cycles);
 }
