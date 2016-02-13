@@ -164,7 +164,6 @@
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Palette.h" />
     <ClInclude Include="Ppu.h" />
-    <ClInclude Include="BlockingQueue.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,4 +1,5 @@
 #include <memory.h>
+#include "Audio.h"
 #include "Cartridge.h"
 #include "Controller.h"
 #include "Console.h"
@@ -85,7 +86,7 @@ void Console::SetButtons2(bool buttons[8]) {
 	Controller2->SetButtons(buttons);
 }
 
-void Console::SetAudioChannel(BlockingQueue<float>* channel) { // TODO chan
+void Console::SetAudioChannel(Audio* channel) {
 	APU->channel = channel;
 }
 

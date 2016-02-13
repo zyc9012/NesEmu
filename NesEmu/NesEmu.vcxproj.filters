@@ -113,9 +113,6 @@
     <ClInclude Include="Mapper4.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="BlockingQueue.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Audio.h">
       <Filter>头文件</Filter>
     </ClInclude>

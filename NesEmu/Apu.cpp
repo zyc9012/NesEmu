@@ -105,7 +105,7 @@ void Apu::Step() {
 void Apu::sendSample() {
 	auto ot = output();
 	//ot = filterChain->Step(ot);
-	channel->push(ot);
+	channel->Push(ot);
 }
 
 float Apu::output() {

@@ -1,51 +1,28 @@
 #include "Audio.h"
-
-int AudioCallback(const void *inputBuffer, void *outputBuffer,
-	unsigned long framesPerBuffer,
-	const PaStreamCallbackTimeInfo* timeInfo,
-	PaStreamCallbackFlags statusFlags,
-	void *userData)
-{
-	/* Cast data passed through stream to our structure. */
-	BlockingQueue<float> *channel = *(BlockingQueue<float>**)userData;
-	float *out = (float*)outputBuffer;
-	unsigned int i;
-
-	for (i = 0; i<framesPerBuffer; i++)
-	{
-		*out++ = channel->pop();
-	}
-
-	if (!channel->empty())
-	{
-		channel->clear();
-	}
-	return 0;
-}
+#include "utils.h"
 
 Audio::Audio()
 {
 	auto err = Pa_Initialize();
 	if (err != paNoError) throw err;
 
-	/* Open an audio I/O stream. */
-	err = Pa_OpenDefaultStream(&stream,
-		0,          /* no input channels */
-		1,          /* mono output */
-		paFloat32,  /* 32 bit floating point output */
-		44100,
-		paFramesPerBufferUnspecified,
-		/* frames per buffer, i.e. the number
-		of sample frames that PortAudio will
-		request from the callback. Many apps
-		may want to use
-		paFramesPerBufferUnspecified, which
-		tells PortAudio to pick the best,
-		possibly changing, buffer size.*/
-		AudioCallback, /* this is your callback function */
-		&channel); /*This is a pointer that will be passed to
-			your callback*/
+	PaStreamParameters outputParameters;
+	outputParameters.device = Pa_GetDefaultOutputDevice();
 
+	outputParameters.channelCount = 1;         /* mono output */
+	outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
+	outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency; //0.050
+	outputParameters.hostApiSpecificStreamInfo = NULL;
+
+	err = Pa_OpenStream(
+        &stream,
+        NULL,               /* no input */
+        &outputParameters,
+		44100,
+		FRAMES_PER_BUFFER,
+        paClipOff,          /* we won't output out of range samples so don't bother clipping them */
+        NULL,               /* no callback, use blocking API */
+        NULL);              /* no callback, so no callback userData */
 }
 
 Audio::~Audio()
@@ -58,6 +35,16 @@ Audio::~Audio()
 void Audio::Start()
 {
 	Pa_StartStream(stream);
+}
+
+void Audio::Push(float out)
+{
+	buffer[bufferPtr++] = out;
+	if (bufferPtr >= FRAMES_PER_BUFFER)
+	{
+		Pa_WriteStream(stream, buffer, FRAMES_PER_BUFFER);
+		bufferPtr = 0;
+	}
 }
 
 void Audio::Stop()

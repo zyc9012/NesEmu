@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "BlockingQueue.h"
+#include "Audio.h"
 class Console;
 class Cpu;
 class FilterChain;
@@ -151,7 +151,7 @@ public:
 	void writeFrameCounter(uint8_t value);
 
 	Console* console;
-	BlockingQueue<float>* channel; // chan
+	Audio* channel;
 	double sampleRate;
 	Pulse pulse1;
 	Pulse pulse2;

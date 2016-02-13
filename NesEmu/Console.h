@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "BlockingQueue.h"
+class Audio;
 class Cpu;
 class Ppu;
 class Apu;
@@ -23,7 +23,7 @@ public:
 	uint32_t BackgroundColor();
 	void SetButtons1(bool buttons[8]);
 	void SetButtons2(bool buttons[8]);
-	void SetAudioChannel(BlockingQueue<float>* channel); // TODO chan
+	void SetAudioChannel(Audio* channel);
 	void SetAudioSampleRate(double sampleRate);
 	bool SaveState(const char* filename);
 	bool Save();

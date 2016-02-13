@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include "Image.h"
 #include "Console.h"
-#include "BlockingQueue.h"
 #include "Audio.h"
 #include "Controller.h"
 #include "utils.h"
@@ -16,7 +15,6 @@ double lastTime;
 
 GLuint texture;
 Console* console;
-BlockingQueue<float>* channel;
 
 void CreateTexture()
 {
@@ -143,10 +141,8 @@ int main(int argc, char** argv)
 	log("Loaded: %s", romFile);
 	console->Reset();
 
-	channel = new BlockingQueue<float>;
 	Audio audio;
-	audio.channel = channel;
-	console->SetAudioChannel(channel);
+	console->SetAudioChannel(&audio);
 	console->SetAudioSampleRate(44100);
 	audio.Start();
 
