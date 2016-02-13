@@ -11,7 +11,9 @@
 
 const unsigned int TARGET_FPS = 30;
 const double TIME_PER_FRAME = 1.0 / TARGET_FPS;
+
 double lastTime;
+uint16_t filterMode = GL_NEAREST;
 
 GLuint texture;
 Console* console;
@@ -20,8 +22,8 @@ void CreateTexture()
 {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -127,6 +129,12 @@ int main(int argc, char** argv)
 		else if (strcmp("-scale", argv[i]) == 0) {
 			i++;
 			scale = (float)atof(argv[i]);
+		}
+		else if (strcmp("-filter", argv[i]) == 0) {
+			i++;
+			if (strcmp("nearest", argv[i]) == 0) filterMode = GL_NEAREST;
+			else if (strcmp("linear", argv[i]) == 0) filterMode = GL_LINEAR;
+			else log("Unknown filter mode, using \"nearest\"");
 		}
 		i++;
 	}
