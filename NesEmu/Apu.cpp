@@ -578,15 +578,15 @@ void Triangle::stepCounter() {
 }
 
 uint8_t Triangle::output() {
-	if (!enabled) {
-		return 0;
-	}
-	if (lengthValue == 0) {
-		return 0;
-	}
-	if (counterValue == 0) {
-		return 0;
-	}
+	//if (!enabled) {
+	//	return 0;
+	//}
+	//if (lengthValue == 0) {
+	//	return 0;
+	//}
+	//if (counterValue == 0) {
+	//	return 0;
+	//}
 	return triangleTable[dutyValue];
 }
 
