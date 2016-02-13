@@ -9,7 +9,7 @@
 #include "utils.h"
 #include "Ppu.h"
 
-const unsigned int TARGET_FPS = 30;
+const unsigned int TARGET_FPS = 60;
 const double TIME_PER_FRAME = 1.0 / TARGET_FPS;
 
 double lastTime;
