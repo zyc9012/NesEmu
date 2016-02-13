@@ -239,6 +239,7 @@ void Apu::writeRegister(uint16_t address, uint8_t value) {
 		triangle.writeControl(value);
 		break;
 	case 0x4009:
+		break;
 	case 0x4010:
 		dmc.writeControl(value);
 		break;
@@ -261,6 +262,7 @@ void Apu::writeRegister(uint16_t address, uint8_t value) {
 		noise.writeControl(value);
 		break;
 	case 0x400D:
+		break;
 	case 0x400E:
 		noise.writePeriod(value);
 		break;
