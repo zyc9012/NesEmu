@@ -99,7 +99,7 @@ uint8_t instructionPageCycles[256]{
 };
 
 // instructionNames indicates the name of each instruction
-char* instructionNames[256]{
+const char* instructionNames[256]{
 	"BRK", "ORA", "KIL", "SLO", "NOP", "ORA", "ASL", "SLO",
 	"PHP", "ORA", "ASL", "ANC", "NOP", "ORA", "ASL", "SLO",
 	"BPL", "ORA", "KIL", "SLO", "NOP", "ORA", "ASL", "SLO",
