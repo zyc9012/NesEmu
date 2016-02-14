@@ -4,3 +4,5 @@ Debug/
 NesEmu/Release/
 NesEmu/Debug/
 *.sdf
+obj/
+bin/

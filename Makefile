@@ -1,0 +1,68 @@
+ifdef VERBOSE
+	Q =
+	E = @true 
+else
+	Q = @
+	E = @echo 
+endif
+
+CFILES := $(shell find NesEmu -mindepth 1 -maxdepth 4 -name "*.c")
+CXXFILES := $(shell find NesEmu -mindepth 1 -maxdepth 4 -name "*.cpp")
+
+INFILES := $(CFILES) $(CXXFILES)
+
+OBJFILES := $(CXXFILES:NesEmu/%.cpp=%) $(CFILES:NesEmu/%.c=%)
+DEPFILES := $(CXXFILES:NesEmu/%.cpp=%) $(CFILES:NesEmu/%.c=%)
+OFILES := $(OBJFILES:%=obj/%.o)
+
+BINFILE = NesEmu
+
+COMMONFLAGS = -O3
+LDFLAGS = -lglew32 -lglfw3 -lportaudio -lopengl32 -lgdi32 -lwinmm -lsetupapi -lole32
+
+ifdef DEBUG
+	COMMONFLAGS := $(COMMONFLAGS) -g
+endif
+CFLAGS = $(COMMONFLAGS) --std=c99
+CXXFLAGS = $(COMMONFLAGS) --std=c++11
+DEPDIR = deps
+
+mingw:
+	$(MAKE) "BINFILE=NesEmu.exe" NesEmu.exe
+
+ifeq ($(MAKECMDGOALS),)
+-include Makefile.dep
+endif
+ifneq ($(filter-out clean, $(MAKECMDGOALS)),)
+-include Makefile.dep
+endif
+
+CC = gcc -static
+CXX = g++ -static
+STRIP = strip --strip-unneeded
+
+-include Makefile.local
+
+.PHONY: clean all depend
+.SUFFIXES:
+obj/%.o: NesEmu/%.c
+	$(E)C-compiling $<
+	$(Q)if [ ! -d `dirname $@` ]; then mkdir -p `dirname $@`; fi
+	$(Q)$(CC) -o $@ -c $< $(CFLAGS)
+obj/%.o: NesEmu/%.cpp
+	$(E)C++-compiling $<
+	$(Q)if [ ! -d `dirname $@` ]; then mkdir -p `dirname $@`; fi
+	$(Q)$(CXX) -o $@ -c $< $(CXXFLAGS)
+Makefile.dep: $(CFILES) $(CXXFILES)
+	$(E)Depend
+	$(Q)for i in $(^); do $(CXX) $(CXXFLAGS) -MM "$${i}" -MT obj/`basename $${i%.*}`.o; done > $@
+
+
+$(BINFILE): $(OFILES)
+	$(E)Linking $@
+	$(Q)if [ ! -d `dirname bin/$@` ]; then mkdir -p `dirname bin/$@`; fi
+	$(Q)$(CXX) -o bin/$@ $(OFILES) $(LDFLAGS)
+	$(Q)$(STRIP) bin/$@
+clean:
+	$(E)Removing files
+	$(Q)rm -f bin/$(BINFILE) obj/* Makefile.dep
