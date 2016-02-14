@@ -56,5 +56,5 @@ public:
 private:
 	FILE* audioOut;
 	WavHeader wavHeader;
-	uint64_t totalSampleCount = 0;
+	uint32_t totalSampleCount = 0;
 };
