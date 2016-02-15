@@ -14,23 +14,14 @@ Cartridge* LoadNESFile(const char* path)
 	FILE *f;
 	errno_t err;
 	err = fopen_s(&f, path, "rb");
-	//fseek(f, 0, SEEK_END);
-	//long size = ftell(f);
 	fseek(f, 0, SEEK_SET);
-	//uint8_t* filedata = new uint8_t[size];
-	//fread(filedata, size, 1, f);
-	//fclose(f);
 
 	// read file header
 	iNESFileHeader header;
 	fread(&header, sizeof(header), 1, f);
-	//if err = binary.Read(file, binary.LittleEndian, &header); err != nil {
-	//	return nil, err
-	//}
 
 	// verify header magic number
 	if (header.Magic != iNESFileMagic) {
-		//return nil, errors.New("invalid .nes file")
 		log("invalid .nes file");
 		return nullptr;
 	}
@@ -53,18 +44,12 @@ Cartridge* LoadNESFile(const char* path)
 		uint8_t* trainer = new uint8_t[512];
 		fread(trainer, 512, 1, f);
 		delete trainer;
-		/*if _, err = io.ReadFull(file, trainer); err != nil {
-		return nil, err
-		}*/
 	}
 
 	// read prg-rom bank(s)
 	int prg_len = int(header.NumPRG) * 16384;
 	auto prg = new uint8_t[prg_len];
 	fread(prg, prg_len, 1, f);
-	//if _, err = io.ReadFull(file, prg); err != nil {
-	//	return nil, err
-	//}
 
 	int chr_len;
 	uint8_t* chr;
