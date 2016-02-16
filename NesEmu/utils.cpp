@@ -25,6 +25,13 @@ Mapper* CreateMapper(Console* console)
 	}
 }
 
+std::string GetStateFileName(const char* romFile)
+{
+	std::string s(romFile);
+	int c = s.find_last_of('.');
+	return s.substr(0, c) + ".state";
+}
+
 void log(const char* fmt, ...)
 {
 	va_list argptr;

@@ -3,6 +3,7 @@
 #include "Memory.h"
 #include "Cartridge.h"
 #include "utils.h"
+#include "StateFile.h"
 
 
 Mapper1::Mapper1(Cartridge* cartridge)
@@ -18,12 +19,30 @@ Mapper1::~Mapper1()
 }
 
 
-bool Mapper1::Save() {
-	return false;
+bool Mapper1::Save(StateFile* f) {
+	f->Put(&shiftRegister);
+	f->Put(&control);
+	f->Put(&prgMode);
+	f->Put(&chrMode);
+	f->Put(&prgBank);
+	f->Put(&chrBank0);
+	f->Put(&chrBank1);
+	f->Put(prgOffsets, 2);
+	f->Put(chrOffsets, 2);
+	return true;
 }
 
-bool Mapper1::Load() {
-	return false;
+bool Mapper1::Load(StateFile* f) {
+	f->Get(&shiftRegister);
+	f->Get(&control);
+	f->Get(&prgMode);
+	f->Get(&chrMode);
+	f->Get(&prgBank);
+	f->Get(&chrBank0);
+	f->Get(&chrBank1);
+	f->Get(prgOffsets, 2);
+	f->Get(chrOffsets, 2);
+	return true;
 }
 
 void Mapper1::Step() {

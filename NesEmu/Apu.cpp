@@ -4,6 +4,7 @@
 #include "Cpu.h"
 #include "utils.h"
 #include "FilterChain.h"
+#include "StateFile.h"
 
 double frameCounterRate = CPUFrequency / 240.0;
 
@@ -59,31 +60,31 @@ Apu::~Apu()
 {
 }
 
-// void Apu::Save(encoder *gob.Encoder) error {
-// 	encoder.Encode(cycle)
-// 	encoder.Encode(framePeriod)
-// 	encoder.Encode(frameValue)
-// 	encoder.Encode(frameIRQ)
-// 	pulse1.Save(encoder)
-// 	pulse2.Save(encoder)
-// 	triangle.Save(encoder)
-// 	noise.Save(encoder)
-// 	dmc.Save(encoder)
-// 	return nil
-// }
+bool Apu::Save(StateFile* f) {
+	f->Put(&cycle);
+	f->Put(&framePeriod);
+	f->Put(&frameValue);
+	f->Put(&frameIRQ);
+	pulse1.Save(f);
+	pulse2.Save(f);
+	triangle.Save(f);
+	noise.Save(f);
+	dmc.Save(f);
+	return true;
+}
 
-// void Apu::Load(decoder *gob.Decoder) error {
-// 	decoder.Decode(&cycle)
-// 	decoder.Decode(&framePeriod)
-// 	decoder.Decode(&frameValue)
-// 	decoder.Decode(&frameIRQ)
-// 	pulse1.Load(decoder)
-// 	pulse2.Load(decoder)
-// 	triangle.Load(decoder)
-// 	noise.Load(decoder)
-// 	dmc.Load(decoder)
-// 	return nil
-// }
+bool Apu::Load(StateFile* f) {
+	f->Get(&cycle);
+	f->Get(&framePeriod);
+	f->Get(&frameValue);
+	f->Get(&frameIRQ);
+	pulse1.Load(f);
+	pulse2.Load(f);
+	triangle.Load(f);
+	noise.Load(f);
+	dmc.Load(f);
+	return true;
+}
 
 void Apu::Step() {
 	auto cycle1 = cycle;
@@ -340,55 +341,55 @@ void Apu::writeFrameCounter(uint8_t value) {
 
 // Pulse
 
-// void Pulse::Save(encoder *gob.Encoder) error {
-// 	encoder.Encode(enabled)
-// 	encoder.Encode(channel)
-// 	encoder.Encode(lengthEnabled)
-// 	encoder.Encode(lengthValue)
-// 	encoder.Encode(timerPeriod)
-// 	encoder.Encode(timerValue)
-// 	encoder.Encode(dutyMode)
-// 	encoder.Encode(dutyValue)
-// 	encoder.Encode(sweepReload)
-// 	encoder.Encode(sweepEnabled)
-// 	encoder.Encode(sweepNegate)
-// 	encoder.Encode(sweepShift)
-// 	encoder.Encode(sweepPeriod)
-// 	encoder.Encode(sweepValue)
-// 	encoder.Encode(envelopeEnabled)
-// 	encoder.Encode(envelopeLoop)
-// 	encoder.Encode(envelopeStart)
-// 	encoder.Encode(envelopePeriod)
-// 	encoder.Encode(envelopeValue)
-// 	encoder.Encode(envelopeVolume)
-// 	encoder.Encode(constantVolume)
-// 	return nil
-// }
+bool Pulse::Save(StateFile* f) {
+	f->Put(&enabled);
+	f->Put(&channel);
+	f->Put(&lengthEnabled);
+	f->Put(&lengthValue);
+	f->Put(&timerPeriod);
+	f->Put(&timerValue);
+	f->Put(&dutyMode);
+	f->Put(&dutyValue);
+	f->Put(&sweepReload);
+	f->Put(&sweepEnabled);
+	f->Put(&sweepNegate);
+	f->Put(&sweepShift);
+	f->Put(&sweepPeriod);
+	f->Put(&sweepValue);
+	f->Put(&envelopeEnabled);
+	f->Put(&envelopeLoop);
+	f->Put(&envelopeStart);
+	f->Put(&envelopePeriod);
+	f->Put(&envelopeValue);
+	f->Put(&envelopeVolume);
+	f->Put(&constantVolume);
+	return true;
+}
 
-// void Pulse::Load(decoder *gob.Decoder) error {
-// 	decoder.Decode(&enabled)
-// 	decoder.Decode(&channel)
-// 	decoder.Decode(&lengthEnabled)
-// 	decoder.Decode(&lengthValue)
-// 	decoder.Decode(&timerPeriod)
-// 	decoder.Decode(&timerValue)
-// 	decoder.Decode(&dutyMode)
-// 	decoder.Decode(&dutyValue)
-// 	decoder.Decode(&sweepReload)
-// 	decoder.Decode(&sweepEnabled)
-// 	decoder.Decode(&sweepNegate)
-// 	decoder.Decode(&sweepShift)
-// 	decoder.Decode(&sweepPeriod)
-// 	decoder.Decode(&sweepValue)
-// 	decoder.Decode(&envelopeEnabled)
-// 	decoder.Decode(&envelopeLoop)
-// 	decoder.Decode(&envelopeStart)
-// 	decoder.Decode(&envelopePeriod)
-// 	decoder.Decode(&envelopeValue)
-// 	decoder.Decode(&envelopeVolume)
-// 	decoder.Decode(&constantVolume)
-// 	return nil
-// }
+bool Pulse::Load(StateFile* f) {
+	f->Get(&enabled);
+	f->Get(&channel);
+	f->Get(&lengthEnabled);
+	f->Get(&lengthValue);
+	f->Get(&timerPeriod);
+	f->Get(&timerValue);
+	f->Get(&dutyMode);
+	f->Get(&dutyValue);
+	f->Get(&sweepReload);
+	f->Get(&sweepEnabled);
+	f->Get(&sweepNegate);
+	f->Get(&sweepShift);
+	f->Get(&sweepPeriod);
+	f->Get(&sweepValue);
+	f->Get(&envelopeEnabled);
+	f->Get(&envelopeLoop);
+	f->Get(&envelopeStart);
+	f->Get(&envelopePeriod);
+	f->Get(&envelopeValue);
+	f->Get(&envelopeVolume);
+	f->Get(&constantVolume);
+	return true;
+}
 
 void Pulse::writeControl(uint8_t value) {
 	dutyMode = (value >> 6) & 3;
@@ -507,31 +508,31 @@ uint8_t Pulse::output() {
 
 
 
-// void Triangle::Save(encoder *gob.Encoder) error {
-// 	encoder.Encode(enabled)
-// 	encoder.Encode(lengthEnabled)
-// 	encoder.Encode(lengthValue)
-// 	encoder.Encode(timerPeriod)
-// 	encoder.Encode(timerValue)
-// 	encoder.Encode(dutyValue)
-// 	encoder.Encode(counterPeriod)
-// 	encoder.Encode(counterValue)
-// 	encoder.Encode(counterReload)
-// 	return nil
-// }
+bool Triangle::Save(StateFile* f) {
+	f->Put(&enabled);
+	f->Put(&lengthEnabled);
+	f->Put(&lengthValue);
+	f->Put(&timerPeriod);
+	f->Put(&timerValue);
+	f->Put(&dutyValue);
+	f->Put(&counterPeriod);
+	f->Put(&counterValue);
+	f->Put(&counterReload);
+	return true;
+}
 
-// void Triangle::Load(decoder *gob.Decoder) error {
-// 	decoder.Decode(&enabled)
-// 	decoder.Decode(&lengthEnabled)
-// 	decoder.Decode(&lengthValue)
-// 	decoder.Decode(&timerPeriod)
-// 	decoder.Decode(&timerValue)
-// 	decoder.Decode(&dutyValue)
-// 	decoder.Decode(&counterPeriod)
-// 	decoder.Decode(&counterValue)
-// 	decoder.Decode(&counterReload)
-// 	return nil
-// }
+bool Triangle::Load(StateFile* f) {
+	f->Get(&enabled);
+	f->Get(&lengthEnabled);
+	f->Get(&lengthValue);
+	f->Get(&timerPeriod);
+	f->Get(&timerValue);
+	f->Get(&dutyValue);
+	f->Get(&counterPeriod);
+	f->Get(&counterValue);
+	f->Get(&counterReload);
+	return true;
+}
 
 void Triangle::writeControl(uint8_t value) {
 	lengthEnabled = ((value>>7)&1) == 0;
@@ -592,41 +593,41 @@ uint8_t Triangle::output() {
 
 // Noise
 
-// void Noise::Save(encoder *gob.Encoder) error {
-// 	encoder.Encode(enabled)
-// 	encoder.Encode(mode)
-// 	encoder.Encode(shiftRegister)
-// 	encoder.Encode(lengthEnabled)
-// 	encoder.Encode(lengthValue)
-// 	encoder.Encode(timerPeriod)
-// 	encoder.Encode(timerValue)
-// 	encoder.Encode(envelopeEnabled)
-// 	encoder.Encode(envelopeLoop)
-// 	encoder.Encode(envelopeStart)
-// 	encoder.Encode(envelopePeriod)
-// 	encoder.Encode(envelopeValue)
-// 	encoder.Encode(envelopeVolume)
-// 	encoder.Encode(constantVolume)
-// 	return nil
-// }
+bool Noise::Save(StateFile* f) {
+	f->Put(&enabled);
+	f->Put(&mode);
+	f->Put(&shiftRegister);
+	f->Put(&lengthEnabled);
+	f->Put(&lengthValue);
+	f->Put(&timerPeriod);
+	f->Put(&timerValue);
+	f->Put(&envelopeEnabled);
+	f->Put(&envelopeLoop);
+	f->Put(&envelopeStart);
+	f->Put(&envelopePeriod);
+	f->Put(&envelopeValue);
+	f->Put(&envelopeVolume);
+	f->Put(&constantVolume);
+	return true;
+}
 
-// void Noise::Load(decoder *gob.Decoder) error {
-// 	decoder.Decode(&enabled)
-// 	decoder.Decode(&mode)
-// 	decoder.Decode(&shiftRegister)
-// 	decoder.Decode(&lengthEnabled)
-// 	decoder.Decode(&lengthValue)
-// 	decoder.Decode(&timerPeriod)
-// 	decoder.Decode(&timerValue)
-// 	decoder.Decode(&envelopeEnabled)
-// 	decoder.Decode(&envelopeLoop)
-// 	decoder.Decode(&envelopeStart)
-// 	decoder.Decode(&envelopePeriod)
-// 	decoder.Decode(&envelopeValue)
-// 	decoder.Decode(&envelopeVolume)
-// 	decoder.Decode(&constantVolume)
-// 	return nil
-// }
+bool Noise::Load(StateFile* f) {
+	f->Get(&enabled);
+	f->Get(&mode);
+	f->Get(&shiftRegister);
+	f->Get(&lengthEnabled);
+	f->Get(&lengthValue);
+	f->Get(&timerPeriod);
+	f->Get(&timerValue);
+	f->Get(&envelopeEnabled);
+	f->Get(&envelopeLoop);
+	f->Get(&envelopeStart);
+	f->Get(&envelopePeriod);
+	f->Get(&envelopeValue);
+	f->Get(&envelopeVolume);
+	f->Get(&constantVolume);
+	return true;
+}
 
 void Noise::writeControl(uint8_t value) {
 	lengthEnabled = ((value>>5)&1) == 0;
@@ -708,37 +709,37 @@ uint8_t Noise::output() {
 // DMC
 
 
-// void DMC::Save(encoder *gob.Encoder) error {
-// 	encoder.Encode(enabled)
-// 	encoder.Encode(value)
-// 	encoder.Encode(sampleAddress)
-// 	encoder.Encode(sampleLength)
-// 	encoder.Encode(currentAddress)
-// 	encoder.Encode(currentLength)
-// 	encoder.Encode(shiftRegister)
-// 	encoder.Encode(bitCount)
-// 	encoder.Encode(tickPeriod)
-// 	encoder.Encode(tickValue)
-// 	encoder.Encode(loop)
-// 	encoder.Encode(irq)
-// 	return nil
-// }
+bool DMC::Save(StateFile* f) {
+	f->Put(&enabled);
+	f->Put(&value);
+	f->Put(&sampleAddress);
+	f->Put(&sampleLength);
+	f->Put(&currentAddress);
+	f->Put(&currentLength);
+	f->Put(&shiftRegister);
+	f->Put(&bitCount);
+	f->Put(&tickPeriod);
+	f->Put(&tickValue);
+	f->Put(&loop);
+	f->Put(&irq);
+	return true;
+}
 
-// void DMC::Load(decoder *gob.Decoder) error {
-// 	decoder.Decode(&enabled)
-// 	decoder.Decode(&value)
-// 	decoder.Decode(&sampleAddress)
-// 	decoder.Decode(&sampleLength)
-// 	decoder.Decode(&currentAddress)
-// 	decoder.Decode(&currentLength)
-// 	decoder.Decode(&shiftRegister)
-// 	decoder.Decode(&bitCount)
-// 	decoder.Decode(&tickPeriod)
-// 	decoder.Decode(&tickValue)
-// 	decoder.Decode(&loop)
-// 	decoder.Decode(&irq)
-// 	return nil
-// }
+bool DMC::Load(StateFile* f) {
+	f->Get(&enabled);
+	f->Get(&value);
+	f->Get(&sampleAddress);
+	f->Get(&sampleLength);
+	f->Get(&currentAddress);
+	f->Get(&currentLength);
+	f->Get(&shiftRegister);
+	f->Get(&bitCount);
+	f->Get(&tickPeriod);
+	f->Get(&tickValue);
+	f->Get(&loop);
+	f->Get(&irq);
+	return true;
+}
 
 void DMC::writeControl(uint8_t value) {
 	irq = (value&0x80) == 0x80;

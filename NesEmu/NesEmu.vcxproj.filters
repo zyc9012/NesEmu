@@ -119,5 +119,8 @@
     <ClInclude Include="Mapper1.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="StateFile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

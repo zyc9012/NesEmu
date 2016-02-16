@@ -8,6 +8,7 @@ class Controller;
 class Mapper;
 class Image;
 class Cartridge;
+class StateFile;
 
 class Console
 {
@@ -26,9 +27,9 @@ public:
 	void SetAudioChannel(Audio* channel);
 	void SetAudioSampleRate(double sampleRate);
 	bool SaveState(const char* filename);
-	bool Save();
+	bool Save(StateFile*);
 	bool LoadState(const char* filename);
-	bool Load();
+	bool Load(StateFile*);
 
 	Cpu* CPU;
 	Apu* APU;

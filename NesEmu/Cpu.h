@@ -2,6 +2,7 @@
 #include <stdint.h>
 class Memory;
 class Console;
+class StateFile;
 
 enum interruptTypes {
 	interruptNone = 1,
@@ -39,6 +40,10 @@ class Cpu
 public:
 	Cpu(Console* console);
 	~Cpu();
+
+	bool Save(StateFile*);
+	bool Load(StateFile*);
+
 	uint8_t mem[0x10000];
 	void Reset();
 	int Step();

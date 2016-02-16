@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <windows.h>
 #include <stdio.h>
+#include <string>
 #include "Image.h"
 #include "Console.h"
 #include "Audio.h"
@@ -17,6 +18,7 @@ uint16_t filterMode = GL_NEAREST;
 
 GLuint texture;
 Console* console;
+std::string stateFileName;
 
 void CreateTexture()
 {
@@ -67,7 +69,15 @@ bool ReadKey(GLFWwindow* window, int key) {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-void ReadKeys(GLFWwindow* window, bool turbo, bool* buttons){
+bool ReadKeyOnChange(GLFWwindow* window, int key, bool prev) {
+	bool result = glfwGetKey(window, key) == GLFW_PRESS;
+	return result == prev ? false : result;
+}
+
+void UpdateControllers(GLFWwindow* window)
+{
+	auto turbo = (console->PPU->Frame % 6) < 3;
+	auto buttons = console->Controller1->buttons;
 	buttons[ButtonA] = ReadKey(window, GLFW_KEY_Z) || (turbo && ReadKey(window, GLFW_KEY_A));
 	buttons[ButtonB] = ReadKey(window, GLFW_KEY_X) || (turbo && ReadKey(window, GLFW_KEY_S));
 	buttons[ButtonSelect] = ReadKey(window, GLFW_KEY_RIGHT_SHIFT);
@@ -78,10 +88,18 @@ void ReadKeys(GLFWwindow* window, bool turbo, bool* buttons){
 	buttons[ButtonRight] = ReadKey(window, GLFW_KEY_L);
 }
 
-void UpdateControllers(GLFWwindow* window)
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	auto turbo = (console->PPU->Frame % 6) < 3;
-	ReadKeys(window, turbo, console->Controller1->buttons);
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_F5:
+			console->SaveState(stateFileName.c_str()); break;
+		case GLFW_KEY_F9:
+			console->LoadState(stateFileName.c_str()); break;
+		}
+	}
 }
 
 void Step(GLFWwindow* window)
@@ -147,6 +165,7 @@ int main(int argc, char** argv)
 
 	console = new Console(romFile);
 	log("Loaded: %s", romFile);
+	stateFileName = GetStateFileName(romFile);
 	console->Reset();
 
 	Audio audio;
@@ -158,6 +177,7 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_RESIZABLE, 0);
 	GLFWwindow* window = glfwCreateWindow(int(256 * scale), int(240 * scale), "Nes Emulator", NULL, NULL);
 	glfwMakeContextCurrent(window);
+	glfwSetKeyCallback(window, KeyCallback);
 	glEnable(GL_TEXTURE_2D);
 	lastTime = glfwGetTime();
 

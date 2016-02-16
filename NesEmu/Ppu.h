@@ -3,12 +3,16 @@
 class Console;
 class Memory;
 class Image;
+class StateFile;
 
 class Ppu
 {
 public:
 	Ppu(Console* console);
 	~Ppu();
+
+	bool Save(StateFile*);
+	bool Load(StateFile*);
 
 	Memory* memory;
 	Console* console; // reference to parent object

@@ -1,5 +1,5 @@
 #include "Cartridge.h"
-
+#include "StateFile.h"
 
 
 Cartridge::Cartridge(uint8_t* prg, int prg_len, uint8_t* chr, int chr_len, uint8_t mapper, uint8_t mirror, uint8_t battery)
@@ -19,16 +19,14 @@ Cartridge::~Cartridge()
 {
 }
 
-bool Cartridge::Save() {
-	//encoder.Encode(cartridge.SRAM);
-	//encoder.Encode(cartridge.Mirror);
-	//return nil;
-	return false;
+bool Cartridge::Save(StateFile* f) {
+	f->Put(SRAM, 0x2000);
+	f->Put(&Mirror);
+	return true;
 }
 
-bool Cartridge::Load() {
-	//decoder.Decode(&cartridge.SRAM);
-	//decoder.Decode(&cartridge.Mirror);
-	//return nil;
-	return false;
+bool Cartridge::Load(StateFile* f) {
+	f->Get(SRAM, 0x2000);
+	f->Get(&Mirror);
+	return true;
 }

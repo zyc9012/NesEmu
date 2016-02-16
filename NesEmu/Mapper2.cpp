@@ -2,6 +2,7 @@
 #include "Mapper2.h"
 #include "Cartridge.h"
 #include "utils.h"
+#include "StateFile.h"
 
 Mapper2::Mapper2(Cartridge* cartridge)
 {
@@ -17,20 +18,18 @@ Mapper2::~Mapper2()
 }
 
 
-bool Mapper2::Save() {
-	//encoder.Encode(prgBanks)
-	//encoder.Encode(prgBank1)
-	//encoder.Encode(prgBank2)
-	//return nil
-	return false;
+bool Mapper2::Save(StateFile* f) {
+	f->Put(&prgBanks);
+	f->Put(&prgBank1);
+	f->Put(&prgBank2);
+	return true;
 }
 
-bool Mapper2::Load() {
-	//decoder.Decode(&prgBanks)
-	//decoder.Decode(&prgBank1)
-	//decoder.Decode(&prgBank2)
-	//return nil
-	return false;
+bool Mapper2::Load(StateFile* f) {
+	f->Get(&prgBanks);
+	f->Get(&prgBank1);
+	f->Get(&prgBank2);
+	return true;
 }
 
 void Mapper2::Step() {

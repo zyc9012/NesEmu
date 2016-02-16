@@ -10,10 +10,10 @@
 #include "iNes.h"
 #include "Palette.h"
 #include "FilterChain.h"
+#include "StateFile.h"
 
 Console::Console(const char* path)
 {
-	initPalette();
 	_Cartridge = LoadNESFile(path);
 	if (_Cartridge == nullptr) {
 		throw nullptr;
@@ -107,53 +107,45 @@ void Console::SetAudioSampleRate(double sampleRate) {
 }
 
 bool Console::SaveState(const char* filename) {
-	// dir, _ := path.Split(filename)
-	// if err := os.MkdirAll(dir, 0755); err != nil {
-	// 	return err
-	// }
-	// file, err := os.Create(filename)
-	// if err != nil {
-	// 	return err
-	// }
-	// defer file.Close()
-	// encoder := gob.NewEncoder(file)
-	// return Save(encoder)
-	return false;
+	try
+	{
+		StateFile f(filename, StateOp_Save);
+		Save(&f);
+		f.Close();
+		log("Saved state: %s", filename);
+	}
+	catch (const std::exception&) {}
+	return true;
 }
 
-bool Console::Save() {
-	// encoder.Encode(RAM);
-	// CPU->Save(encoder);
-	// APU->Save(encoder);
-	// PPU->Save(encoder);
-	// Cartridge.Save(encoder);
-	// Mapper.Save(encoder);
-	// return encoder.Encode(true);
-	return false;
+bool Console::Save(StateFile* f) {
+	f->Put(RAM, 2048);
+	CPU->Save(f);
+	APU->Save(f);
+	PPU->Save(f);
+	_Cartridge->Save(f);
+	_Mapper->Save(f);
+	return true;
 }
 
 bool Console::LoadState(const char* filename) {
-	// file, err := os.Open(filename)
-	// if err != nil {
-	// 	return err
-	// }
-	// defer file.Close()
-	// decoder := gob.NewDecoder(file)
-	// return Load(decoder)
-	return false;
+	try
+	{
+		StateFile f(filename, StateOp_Load);
+		Load(&f);
+		f.Close();
+		log("Loaded state: %s", filename);
+	}
+	catch (const std::exception&) {}
+	return true;
 }
 
-bool Console::Load() {
-	// decoder.Decode(&RAM);
-	// CPU->Load(decoder);
-	// APU->Load(decoder);
-	// PPU->Load(decoder);
-	// Cartridge.Load(decoder);
-	// Mapper.Load(decoder);
-	// bool dummy;
-	// if err := decoder.Decode(&dummy); err != nil {
-	// 	return err
-	// }
-	// return nil
-	return false;
+bool Console::Load(StateFile* f) {
+	f->Get(RAM, 2048);
+	CPU->Load(f);
+	APU->Load(f);
+	PPU->Load(f);
+	_Cartridge->Load(f);
+	_Mapper->Load(f);
+	return true;
 }

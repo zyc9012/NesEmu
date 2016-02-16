@@ -6,6 +6,7 @@
 #include "Memory.h"
 #include "Cartridge.h"
 #include "utils.h"
+#include "StateFile.h"
 
 Mapper4::Mapper4(Console* console, Cartridge* cartridge)
 {
@@ -22,12 +23,30 @@ Mapper4::~Mapper4()
 {
 }
 
-bool Mapper4::Save() {
-	return false;
+bool Mapper4::Save(StateFile* f) {
+	f->Put(&_register);
+	f->Put(registers, 8);
+	f->Put(&prgMode);
+	f->Put(&chrMode);
+	f->Put(prgOffsets, 4);
+	f->Put(chrOffsets, 8);
+	f->Put(&reload);
+	f->Put(&counter);
+	f->Put(&irqEnable);
+	return true;
 }
 
-bool Mapper4::Load() {
-	return false;
+bool Mapper4::Load(StateFile* f) {
+	f->Get(&_register);
+	f->Get(registers, 8);
+	f->Get(&prgMode);
+	f->Get(&chrMode);
+	f->Get(prgOffsets, 4);
+	f->Get(chrOffsets, 8);
+	f->Get(&reload);
+	f->Get(&counter);
+	f->Get(&irqEnable);
+	return true;
 }
 
 void Mapper4::Step() {

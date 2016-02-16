@@ -4,12 +4,16 @@
 class Console;
 class Cpu;
 class FilterChain;
+class StateFile;
 
 class Pulse
 {
 public:
 	Pulse() {}
 	~Pulse() {}
+
+	bool Save(StateFile*);
+	bool Load(StateFile*);
 
 	void writeControl(uint8_t value);
 	void writeSweep(uint8_t value);
@@ -51,6 +55,9 @@ public:
 	Triangle() {}
 	~Triangle() {}
 
+	bool Save(StateFile*);
+	bool Load(StateFile*);
+
 	void writeControl(uint8_t value);
 	void writeTimerLow(uint8_t value);
 	void writeTimerHigh(uint8_t value);
@@ -74,6 +81,9 @@ class Noise {
 public:
 	Noise() {}
 	~Noise() {}
+
+	bool Save(StateFile*);
+	bool Load(StateFile*);
 
 	void writeControl(uint8_t value);
 	void stepTimer();
@@ -103,6 +113,9 @@ class DMC {
 public:
 	DMC() {}
 	~DMC() {}
+
+	bool Save(StateFile*);
+	bool Load(StateFile*);
 
 	void writeControl(uint8_t value);
 	void writeValue(uint8_t value);
@@ -134,6 +147,9 @@ class Apu
 public:
 	Apu(Console* console);
 	~Apu();
+
+	bool Save(StateFile*);
+	bool Load(StateFile*);
 
 	void Step();
 	void sendSample();

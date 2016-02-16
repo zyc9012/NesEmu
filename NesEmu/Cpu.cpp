@@ -1,6 +1,7 @@
 #include "Cpu.h"
 #include "Memory.h"
 #include "Console.h"
+#include "StateFile.h"
 
 stepInfo fakeStepInfo;
 
@@ -171,46 +172,46 @@ void Cpu::createTable() {
 		&Cpu::sed, &Cpu::sbc, &Cpu::nop, &Cpu::isc, &Cpu::nop, &Cpu::sbc, &Cpu::inc, &Cpu::isc,
 	};
 }
-//
-//void Cpu::Save(encoder *gob.Encoder) error {
-//	encoder.Encode(Cycles)
-//		encoder.Encode(PC)
-//		encoder.Encode(SP)
-//		encoder.Encode(A)
-//		encoder.Encode(X)
-//		encoder.Encode(Y)
-//		encoder.Encode(C)
-//		encoder.Encode(Z)
-//		encoder.Encode(I)
-//		encoder.Encode(D)
-//		encoder.Encode(B)
-//		encoder.Encode(U)
-//		encoder.Encode(V)
-//		encoder.Encode(N)
-//		encoder.Encode(interrupt)
-//		encoder.Encode(stall)
-//		return nil
-//}
-//
-//void Cpu::Load(decoder *gob.Decoder) error {
-//	decoder.Decode(&Cycles)
-//		decoder.Decode(&PC)
-//		decoder.Decode(&SP)
-//		decoder.Decode(&A)
-//		decoder.Decode(&X)
-//		decoder.Decode(&Y)
-//		decoder.Decode(&C)
-//		decoder.Decode(&Z)
-//		decoder.Decode(&I)
-//		decoder.Decode(&D)
-//		decoder.Decode(&B)
-//		decoder.Decode(&U)
-//		decoder.Decode(&V)
-//		decoder.Decode(&N)
-//		decoder.Decode(&interrupt)
-//		decoder.Decode(&stall)
-//		return nil
-//}
+
+bool Cpu::Save(StateFile* f) {
+	f->Put(&Cycles);
+	f->Put(&PC);
+	f->Put(&SP);
+	f->Put(&A);
+	f->Put(&X);
+	f->Put(&Y);
+	f->Put(&C);
+	f->Put(&Z);
+	f->Put(&I);
+	f->Put(&D);
+	f->Put(&B);
+	f->Put(&U);
+	f->Put(&V);
+	f->Put(&N);
+	f->Put(&interrupt);
+	f->Put(&stall);
+	return true;
+}
+
+bool Cpu::Load(StateFile* f) {
+	f->Get(&Cycles);
+	f->Get(&PC);
+	f->Get(&SP);
+	f->Get(&A);
+	f->Get(&X);
+	f->Get(&Y);
+	f->Get(&C);
+	f->Get(&Z);
+	f->Get(&I);
+	f->Get(&D);
+	f->Get(&B);
+	f->Get(&U);
+	f->Get(&V);
+	f->Get(&N);
+	f->Get(&interrupt);
+	f->Get(&stall);
+	return true;
+}
 
 // Reset resets the CPU to its initial powerup state
 void Cpu::Reset() {

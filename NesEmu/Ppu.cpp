@@ -4,9 +4,11 @@
 #include "Console.h"
 #include "Memory.h"
 #include "Image.h"
+#include "StateFile.h"
 
 Ppu::Ppu(Console* console)
 {
+	initPalette();
 	this->console = console;
 	memory = new PpuMemory(console);
 	front = new Image(256, 240);
@@ -20,101 +22,101 @@ Ppu::~Ppu()
 }
 
 
-// void Ppu::Save(encoder *gob.Encoder) error {
-// 	encoder.Encode(Cycle)
-// 	encoder.Encode(ScanLine)
-// 	encoder.Encode(Frame)
-// 	encoder.Encode(paletteData)
-// 	encoder.Encode(nameTableData)
-// 	encoder.Encode(oamData)
-// 	encoder.Encode(v)
-// 	encoder.Encode(t)
-// 	encoder.Encode(x)
-// 	encoder.Encode(w)
-// 	encoder.Encode(f)
-// 	encoder.Encode(register)
-// 	encoder.Encode(nmiOccurred)
-// 	encoder.Encode(nmiOutput)
-// 	encoder.Encode(nmiPrevious)
-// 	encoder.Encode(nmiDelay)
-// 	encoder.Encode(nameTableByte)
-// 	encoder.Encode(attributeTableByte)
-// 	encoder.Encode(lowTileByte)
-// 	encoder.Encode(highTileByte)
-// 	encoder.Encode(tileData)
-// 	encoder.Encode(spriteCount)
-// 	encoder.Encode(spritePatterns)
-// 	encoder.Encode(spritePositions)
-// 	encoder.Encode(spritePriorities)
-// 	encoder.Encode(spriteIndexes)
-// 	encoder.Encode(flagNameTable)
-// 	encoder.Encode(flagIncrement)
-// 	encoder.Encode(flagSpriteTable)
-// 	encoder.Encode(flagBackgroundTable)
-// 	encoder.Encode(flagSpriteSize)
-// 	encoder.Encode(flagMasterSlave)
-// 	encoder.Encode(flagGrayscale)
-// 	encoder.Encode(flagShowLeftBackground)
-// 	encoder.Encode(flagShowLeftSprites)
-// 	encoder.Encode(flagShowBackground)
-// 	encoder.Encode(flagShowSprites)
-// 	encoder.Encode(flagRedTint)
-// 	encoder.Encode(flagGreenTint)
-// 	encoder.Encode(flagBlueTint)
-// 	encoder.Encode(flagSpriteZeroHit)
-// 	encoder.Encode(flagSpriteOverflow)
-// 	encoder.Encode(oamAddress)
-// 	encoder.Encode(bufferedData)
-// 	return nil
-// }
+bool Ppu::Save(StateFile* f) {
+	f->Put(&Cycle);
+	f->Put(&ScanLine);
+	f->Put(&Frame);
+	f->Put(paletteData, 32);
+	f->Put(nameTableData, 2048);
+	f->Put(oamData, 256);
+	f->Put(&v);
+	f->Put(&t);
+	f->Put(&x);
+	f->Put(&w);
+	f->Put(&this->f);
+	f->Put(&_register);
+	f->Put(&nmiOccurred);
+	f->Put(&nmiOutput);
+	f->Put(&nmiPrevious);
+	f->Put(&nmiDelay);
+	f->Put(&nameTableByte);
+	f->Put(&attributeTableByte);
+	f->Put(&lowTileByte);
+	f->Put(&highTileByte);
+	f->Put(&tileData);
+	f->Put(&spriteCount);
+	f->Put(spritePatterns, 8);
+	f->Put(spritePositions, 8);
+	f->Put(spritePriorities, 8);
+	f->Put(spriteIndexes, 8);
+	f->Put(&flagNameTable);
+	f->Put(&flagIncrement);
+	f->Put(&flagSpriteTable);
+	f->Put(&flagBackgroundTable);
+	f->Put(&flagSpriteSize);
+	f->Put(&flagMasterSlave);
+	f->Put(&flagGrayscale);
+	f->Put(&flagShowLeftBackground);
+	f->Put(&flagShowLeftSprites);
+	f->Put(&flagShowBackground);
+	f->Put(&flagShowSprites);
+	f->Put(&flagRedTint);
+	f->Put(&flagGreenTint);
+	f->Put(&flagBlueTint);
+	f->Put(&flagSpriteZeroHit);
+	f->Put(&flagSpriteOverflow);
+	f->Put(&oamAddress);
+	f->Put(&bufferedData);
+	return true;
+}
 
-// void Ppu::Load(decoder *gob.Decoder) error {
-// 	decoder.Decode(&Cycle)
-// 	decoder.Decode(&ScanLine)
-// 	decoder.Decode(&Frame)
-// 	decoder.Decode(&paletteData)
-// 	decoder.Decode(&nameTableData)
-// 	decoder.Decode(&oamData)
-// 	decoder.Decode(&v)
-// 	decoder.Decode(&t)
-// 	decoder.Decode(&x)
-// 	decoder.Decode(&w)
-// 	decoder.Decode(&f)
-// 	decoder.Decode(&register)
-// 	decoder.Decode(&nmiOccurred)
-// 	decoder.Decode(&nmiOutput)
-// 	decoder.Decode(&nmiPrevious)
-// 	decoder.Decode(&nmiDelay)
-// 	decoder.Decode(&nameTableByte)
-// 	decoder.Decode(&attributeTableByte)
-// 	decoder.Decode(&lowTileByte)
-// 	decoder.Decode(&highTileByte)
-// 	decoder.Decode(&tileData)
-// 	decoder.Decode(&spriteCount)
-// 	decoder.Decode(&spritePatterns)
-// 	decoder.Decode(&spritePositions)
-// 	decoder.Decode(&spritePriorities)
-// 	decoder.Decode(&spriteIndexes)
-// 	decoder.Decode(&flagNameTable)
-// 	decoder.Decode(&flagIncrement)
-// 	decoder.Decode(&flagSpriteTable)
-// 	decoder.Decode(&flagBackgroundTable)
-// 	decoder.Decode(&flagSpriteSize)
-// 	decoder.Decode(&flagMasterSlave)
-// 	decoder.Decode(&flagGrayscale)
-// 	decoder.Decode(&flagShowLeftBackground)
-// 	decoder.Decode(&flagShowLeftSprites)
-// 	decoder.Decode(&flagShowBackground)
-// 	decoder.Decode(&flagShowSprites)
-// 	decoder.Decode(&flagRedTint)
-// 	decoder.Decode(&flagGreenTint)
-// 	decoder.Decode(&flagBlueTint)
-// 	decoder.Decode(&flagSpriteZeroHit)
-// 	decoder.Decode(&flagSpriteOverflow)
-// 	decoder.Decode(&oamAddress)
-// 	decoder.Decode(&bufferedData)
-// 	return nil
-// }
+bool Ppu::Load(StateFile* f) {
+	f->Get(&Cycle);
+	f->Get(&ScanLine);
+	f->Get(&Frame);
+	f->Get(paletteData, 32);
+	f->Get(nameTableData, 2048);
+	f->Get(oamData, 256);
+	f->Get(&v);
+	f->Get(&t);
+	f->Get(&x);
+	f->Get(&w);
+	f->Get(&this->f);
+	f->Get(&_register);
+	f->Get(&nmiOccurred);
+	f->Get(&nmiOutput);
+	f->Get(&nmiPrevious);
+	f->Get(&nmiDelay);
+	f->Get(&nameTableByte);
+	f->Get(&attributeTableByte);
+	f->Get(&lowTileByte);
+	f->Get(&highTileByte);
+	f->Get(&tileData);
+	f->Get(&spriteCount);
+	f->Get(spritePatterns, 8);
+	f->Get(spritePositions, 8);
+	f->Get(spritePriorities, 8);
+	f->Get(spriteIndexes, 8);
+	f->Get(&flagNameTable);
+	f->Get(&flagIncrement);
+	f->Get(&flagSpriteTable);
+	f->Get(&flagBackgroundTable);
+	f->Get(&flagSpriteSize);
+	f->Get(&flagMasterSlave);
+	f->Get(&flagGrayscale);
+	f->Get(&flagShowLeftBackground);
+	f->Get(&flagShowLeftSprites);
+	f->Get(&flagShowBackground);
+	f->Get(&flagShowSprites);
+	f->Get(&flagRedTint);
+	f->Get(&flagGreenTint);
+	f->Get(&flagBlueTint);
+	f->Get(&flagSpriteZeroHit);
+	f->Get(&flagSpriteOverflow);
+	f->Get(&oamAddress);
+	f->Get(&bufferedData);
+	return true;
+}
 
 void Ppu::Reset() {
 	Cycle = 340;
