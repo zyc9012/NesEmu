@@ -114,8 +114,8 @@ public:
 	void fetchHighTileByte();
 	void storeTileData();
 	uint32_t fetchTileData();
-	uint8_t backgroundPixel();
-	uint8_t* spritePixel();
+	inline uint8_t backgroundPixel();
+	inline void spritePixel(uint8_t& index, uint8_t& sprite);
 	void renderPixel();
 	uint32_t fetchSpritePattern(int i, int row);
 	void evaluateSprites();

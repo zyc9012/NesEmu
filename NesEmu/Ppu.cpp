@@ -455,12 +455,11 @@ uint8_t Ppu::backgroundPixel() {
 	return uint8_t(data & 0x0F);
 }
 
-uint8_t spritePix[2];
-uint8_t* Ppu::spritePixel()  {
+void Ppu::spritePixel(uint8_t& index, uint8_t& sprite)  {
 	if (flagShowSprites == 0) {
-		spritePix[0] = 0;
-		spritePix[1] = 0;
-		return spritePix;
+		index = 0;
+		sprite = 0;
+		return;
 	}
 	for (int i = 0; i < spriteCount; i++) {
 		auto offset = (Cycle - 1) - int(spritePositions[i]);
@@ -472,22 +471,20 @@ uint8_t* Ppu::spritePixel()  {
 		if (color%4 == 0) {
 			continue;
 		}
-		spritePix[0] = uint8_t(i);
-		spritePix[1] = color;
-		return spritePix;
+		index = uint8_t(i);
+		sprite = color;
+		return;
 	}
-	spritePix[0] = 0;
-	spritePix[1] = 0;
-	return spritePix;
+	index = 0;
+	sprite = 0;
 }
 
 void Ppu::renderPixel() {
 	auto x = Cycle - 1;
 	auto y = ScanLine;
 	auto background = backgroundPixel();
-	uint8_t* pix = spritePixel();
-	auto i = pix[0];
-	auto sprite = pix[1];
+	uint8_t i, sprite;
+	spritePixel(i, sprite);
 	if (x < 8 && flagShowLeftBackground == 0) {
 		background = 0;
 	}
