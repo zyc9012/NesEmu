@@ -22,7 +22,7 @@ Cartridge* LoadNESFile(const char* path)
 
 	// verify header magic number
 	if (header.Magic != iNESFileMagic) {
-		log("invalid .nes file");
+		log("Invalid .nes file");
 		return nullptr;
 	}
 
@@ -30,14 +30,17 @@ Cartridge* LoadNESFile(const char* path)
 	auto mapper1 = header.Control1 >> 4;
 	auto mapper2 = header.Control2 >> 4;
 	auto mapper = mapper1 | mapper2 << 4;
+	log("Mapper: %d", mapper);
 
 	// mirroring type
 	auto mirror1 = header.Control1 & 1;
 	auto mirror2 = (header.Control1 >> 3) & 1;
 	auto mirror = mirror1 | mirror2 << 1;
+	log("Mirror: %d", mirror);
 
 	// battery-backed RAM
 	auto battery = (header.Control1 >> 1) & 1;
+	log("Battery: %d", battery);
 
 	// read trainer if present (unused)
 	if ((header.Control1 & 4) == 4) {
@@ -48,10 +51,12 @@ Cartridge* LoadNESFile(const char* path)
 
 	// read prg-rom bank(s)
 	int prg_len = int(header.NumPRG) * 16384;
+	log("PRG: %dK", header.NumPRG * 16);
 	auto prg = new uint8_t[prg_len];
 	fread(prg, prg_len, 1, f);
 
 	int chr_len;
+	log("CHR: %dK", header.NumCHR * 8);
 	uint8_t* chr;
 	// provide chr-rom/ram if not in file
 	if (header.NumCHR == 0) {
