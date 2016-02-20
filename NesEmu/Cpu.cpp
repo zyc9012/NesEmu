@@ -256,17 +256,17 @@ void Cpu::Write(uint16_t address, uint8_t value) {
 uint16_t Cpu::Read16(uint16_t address) {
 	auto lo = uint16_t(Read(address));
 	auto hi = uint16_t(Read(address + 1));
-	return hi << 8 | lo;
+	return (hi << 8) | lo;
 }
 
 // read16bug emulates a 6502 bug that caused the low uint8_t to wrap without
 // incrementing the high uint8_t
 uint16_t Cpu::read16bug(uint16_t address) {
 	auto a = address;
-	auto b = (a & 0xFF00) | uint16_t(uint8_t(a) + 1);
+	auto b = (a & 0xFF00) | ((a + 1) & 0x00FF);
 	auto lo = Read(a);
 	auto hi = Read(b);
-	return uint16_t(hi) << 8 | uint16_t(lo);
+	return (uint16_t(hi) << 8) | uint16_t(lo);
 }
 
 // push pushes a uint8_t onto the stack
@@ -404,7 +404,7 @@ int Cpu::Step() {
 		address = 0;
 		break;
 	case modeIndexedIndirect:
-		address = read16bug(uint16_t(Read(PC + 1) + X));
+		address = read16bug(uint8_t(Read(PC + 1) + X));
 		break;
 	case modeIndirect:
 		address = read16bug(Read16(PC + 1));
@@ -423,13 +423,13 @@ int Cpu::Step() {
 		}
 		break;
 	case modeZeroPage:
-		address = uint16_t(Read(PC + 1));
+		address = uint8_t(Read(PC + 1));
 		break;
 	case modeZeroPageX:
-		address = uint16_t(Read(PC + 1) + X);
+		address = uint8_t(Read(PC + 1) + X);
 		break;
 	case modeZeroPageY:
-		address = uint16_t(Read(PC + 1) + Y);
+		address = uint8_t(Read(PC + 1) + Y);
 		break;
 	}
 
