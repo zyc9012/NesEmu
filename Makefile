@@ -17,18 +17,25 @@ OFILES := $(OBJFILES:%=obj/%.o)
 
 BINFILE = NesEmu
 
-COMMONFLAGS = -O3
-LDFLAGS = -lglew32 -lglfw3 -lportaudio -lopengl32 -lgdi32 -lwinmm -lsetupapi -lole32
+COMMONFLAGS = -O3 -Wno-unused-result
+CINCLUDES = `pkg-config --cflags portaudio-2.0` `pkg-config --cflags glfw3`
+LDFLAGS_GLEW = -lGLEW
+LDFLAGS_GLFW = `pkg-config --static --libs glfw3`
+LDFLAGS_PORTAUDIO = `pkg-config --static --libs portaudio-2.0` 
+LDFLAGS = $(LDFLAGS_GLEW) $(LDFLAGS_GLFW) $(LDFLAGS_PORTAUDIO)
 
 ifdef DEBUG
 	COMMONFLAGS := $(COMMONFLAGS) -g
 endif
-CFLAGS = $(COMMONFLAGS) --std=c99
-CXXFLAGS = $(COMMONFLAGS) --std=c++11
+CFLAGS = $(COMMONFLAGS) --std=c99 $(CINCLUDES)
+CXXFLAGS = $(COMMONFLAGS) --std=c++11 $(CINCLUDES)
 DEPDIR = deps
 
+linux:
+	$(MAKE) $(BINFILE)
+
 mingw:
-	$(MAKE) "BINFILE=NesEmu.exe" NesEmu.exe
+	$(MAKE) "BINFILE=NesEmu.exe" "LDFLAGS_GLEW= -lglew32" $(BINFILE).exe
 
 ifeq ($(MAKECMDGOALS),)
 -include Makefile.dep
@@ -37,8 +44,8 @@ ifneq ($(filter-out clean, $(MAKECMDGOALS)),)
 -include Makefile.dep
 endif
 
-CC = gcc -static
-CXX = g++ -static
+CC = gcc
+CXX = g++
 STRIP = strip --strip-unneeded
 
 -include Makefile.local
