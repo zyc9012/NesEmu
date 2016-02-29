@@ -1,6 +1,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#ifdef _WIN32
 #include <windows.h>
+#define SLEEP(n) Sleep(n)
+#else
+#include <time.h>
+#include <string.h>
+#define SLEEP(n) timespec __t;\
+                 __t.tv_nsec = n;\
+                 nanosleep(&__t, NULL);
+#endif
 #include <stdio.h>
 #include <string>
 #include "Image.h"
@@ -69,11 +78,6 @@ bool ReadKey(GLFWwindow* window, int key) {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-bool ReadKeyOnChange(GLFWwindow* window, int key, bool prev) {
-	bool result = glfwGetKey(window, key) == GLFW_PRESS;
-	return result == prev ? false : result;
-}
-
 void UpdateControllers(GLFWwindow* window)
 {
 	auto turbo = (console->PPU->Frame % 6) < 3;
@@ -125,7 +129,8 @@ void Step(GLFWwindow* window)
 	double remainingTime = TIME_PER_FRAME - (renderEndTime - lastTime);
 
 	if (remainingTime > 0) {
-		Sleep(long(remainingTime * 1000));
+		long t = remainingTime * 1000;
+		SLEEP(t);
 	}
 
 	lastTime = glfwGetTime();

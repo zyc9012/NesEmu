@@ -1,6 +1,5 @@
 #pragma once
 #include <stdio.h>
-#include <exception>
 
 enum StateFileOp {
 	StateOp_Load,
@@ -19,7 +18,6 @@ public:
 		else {
 			err = fopen_s(&fp, filename, "wb");
 		}
-		if (err) throw std::exception("Error opening state file");
 	}
 	~StateFile() {}
 
