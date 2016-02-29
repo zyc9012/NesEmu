@@ -35,7 +35,7 @@ linux:
 	$(MAKE) $(BINFILE)
 
 mingw:
-	$(MAKE) "BINFILE=NesEmu.exe" "LDFLAGS_GLEW= -lglew32" $(BINFILE).exe
+	$(MAKE) "BINFILE=NesEmu.exe" "LDFLAGS_GLEW= -static -lglew32" $(BINFILE).exe
 
 ifeq ($(MAKECMDGOALS),)
 -include Makefile.dep
