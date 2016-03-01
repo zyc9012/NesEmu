@@ -7,6 +7,7 @@
 #include <time.h>
 #include <string.h>
 #define SLEEP(n) timespec __t;\
+                 __t.tv_sec = 0;\
                  __t.tv_nsec = n;\
                  nanosleep(&__t, NULL);
 #endif
@@ -64,13 +65,13 @@ void DrawBuffer(GLFWwindow* window)
 	}
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);
-	glVertex2f(-x, y);
-	glTexCoord2f(1, 1);
-	glVertex2f(x, y);
-	glTexCoord2f(1, 0);
-	glVertex2f(x, -y);
-	glTexCoord2f(0, 0);
 	glVertex2f(-x, -y);
+	glTexCoord2f(1, 1);
+	glVertex2f(x, -y);
+	glTexCoord2f(1, 0);
+	glVertex2f(x, y);
+	glTexCoord2f(0, 0);
+	glVertex2f(-x, y);
 	glEnd();
 }
 

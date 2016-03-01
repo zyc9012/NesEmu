@@ -17,5 +17,5 @@ Image::~Image()
 
 void Image::SetColor(int x, int y, uint32_t color)
 {
-	bytes[(height-y-1)*width + x] = color;
+	bytes[y*width + x] = color;
 }
