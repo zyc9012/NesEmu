@@ -15,5 +15,8 @@ private:
 	const unsigned char* ReadJoyStickButtons();
 
 	Host* host;
+	bool hasJoy1;
+	bool hasJoy2;
+	int counter = 0;
 };
 

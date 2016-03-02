@@ -26,6 +26,8 @@ Input::Input(Host* host)
 	this->host = host;
 	__host = host;
 	glfwSetKeyCallback(host->window, KeyCallback);
+	hasJoy1 = glfwJoystickPresent(GLFW_JOYSTICK_1);
+	hasJoy2 = glfwJoystickPresent(GLFW_JOYSTICK_2);
 }
 
 
@@ -50,16 +52,28 @@ const unsigned char* Input::ReadJoyStickButtons() {
 
 void Input::UpdateControllers()
 {
-	auto joyAxes = ReadJoyStickAxes();
-	auto joyButtons = ReadJoyStickButtons();
 	auto turbo = (host->console->PPU->Frame % 6) < 3;
 	auto buttons = host->console->Controller1->buttons;
-	buttons[ButtonA] = ReadKey(GLFW_KEY_Z) || (turbo && ReadKey(GLFW_KEY_A)) || joyButtons[0];
-	buttons[ButtonB] = ReadKey(GLFW_KEY_X) || (turbo && ReadKey(GLFW_KEY_S)) || joyButtons[1];
-	buttons[ButtonSelect] = ReadKey(GLFW_KEY_RIGHT_SHIFT) || joyButtons[4];
-	buttons[ButtonStart] = ReadKey(GLFW_KEY_ENTER) || joyButtons[5];
-	buttons[ButtonUp] = ReadKey(GLFW_KEY_I) || (joyAxes[1] < -0.5);
-	buttons[ButtonDown] = ReadKey(GLFW_KEY_K) || (joyAxes[1] > 0.5);
-	buttons[ButtonLeft] = ReadKey(GLFW_KEY_J) || (joyAxes[0] < -0.5);
-	buttons[ButtonRight] = ReadKey(GLFW_KEY_L) || (joyAxes[0] > 0.5);
+	buttons[ButtonA] = ReadKey(GLFW_KEY_Z) || (turbo && ReadKey(GLFW_KEY_A));
+	buttons[ButtonB] = ReadKey(GLFW_KEY_X) || (turbo && ReadKey(GLFW_KEY_S));
+	buttons[ButtonSelect] = ReadKey(GLFW_KEY_RIGHT_SHIFT);
+	buttons[ButtonStart] = ReadKey(GLFW_KEY_ENTER);
+	buttons[ButtonUp] = ReadKey(GLFW_KEY_I);
+	buttons[ButtonDown] = ReadKey(GLFW_KEY_K);
+	buttons[ButtonLeft] = ReadKey(GLFW_KEY_J);
+	buttons[ButtonRight] = ReadKey(GLFW_KEY_L);
+	
+	if (hasJoy1 || hasJoy2)
+	{
+		auto joyButtons = ReadJoyStickButtons();
+		auto joyAxes = ReadJoyStickAxes();
+		buttons[ButtonA] |= joyButtons[0];
+		buttons[ButtonB] |= joyButtons[1];
+		buttons[ButtonSelect] |= joyButtons[4];
+		buttons[ButtonStart] |= joyButtons[5];
+		buttons[ButtonUp] |= (joyAxes[1] < -0.5);
+		buttons[ButtonDown] |= (joyAxes[1] > 0.5);
+		buttons[ButtonLeft] |= (joyAxes[0] < -0.5);
+		buttons[ButtonRight] |= (joyAxes[0] > 0.5);
+	}
 }
