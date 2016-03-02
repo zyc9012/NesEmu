@@ -130,13 +130,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Apu.cpp" />
-    <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Cartridge.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="FilterChain.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="host\Audio.cpp" />
+    <ClCompile Include="host\Config.cpp" />
+    <ClCompile Include="host\Graphics.cpp" />
+    <ClCompile Include="host\Host.cpp" />
+    <ClCompile Include="host\Input.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="iNes.cpp" />
     <ClCompile Include="Mapper1.cpp" />
@@ -149,12 +152,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Apu.h" />
-    <ClInclude Include="Audio.h" />
     <ClInclude Include="Cartridge.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="FilterChain.h" />
+    <ClInclude Include="host\Audio.h" />
+    <ClInclude Include="host\Config.h" />
+    <ClInclude Include="host\Graphics.h" />
+    <ClInclude Include="host\Host.h" />
+    <ClInclude Include="host\Input.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="iNes.h" />
     <ClInclude Include="Mapper.h" />

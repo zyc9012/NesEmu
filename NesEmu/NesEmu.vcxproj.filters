@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\host">
+      <UniqueIdentifier>{5a05eb01-880e-4459-af1f-8eebe1028b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\host">
+      <UniqueIdentifier>{f16bff08-7ffb-47b8-90c9-409849681d57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cpu.cpp">
@@ -54,17 +60,26 @@
     <ClCompile Include="Mapper4.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Mapper1.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="host\Host.cpp">
+      <Filter>源文件\host</Filter>
+    </ClCompile>
+    <ClCompile Include="host\Audio.cpp">
+      <Filter>源文件\host</Filter>
+    </ClCompile>
+    <ClCompile Include="host\Graphics.cpp">
+      <Filter>源文件\host</Filter>
+    </ClCompile>
+    <ClCompile Include="host\Config.cpp">
+      <Filter>源文件\host</Filter>
+    </ClCompile>
+    <ClCompile Include="host\Input.cpp">
+      <Filter>源文件\host</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,14 +128,26 @@
     <ClInclude Include="Mapper4.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Audio.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Mapper1.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="StateFile.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="host\Host.h">
+      <Filter>头文件\host</Filter>
+    </ClInclude>
+    <ClInclude Include="host\Audio.h">
+      <Filter>头文件\host</Filter>
+    </ClInclude>
+    <ClInclude Include="host\Graphics.h">
+      <Filter>头文件\host</Filter>
+    </ClInclude>
+    <ClInclude Include="host\Config.h">
+      <Filter>头文件\host</Filter>
+    </ClInclude>
+    <ClInclude Include="host\Input.h">
+      <Filter>头文件\host</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
