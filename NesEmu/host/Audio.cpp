@@ -59,7 +59,7 @@ void Audio::Stop()
 
 AudioRecorder::AudioRecorder(const char* filename)
 {
-	auto e = fopen_s(&audioOut, filename, "wb");
+	audioOut = fopen(filename, "wb");
 	fwrite(&wavHeader, sizeof(wavHeader), 1, audioOut);
 }
 

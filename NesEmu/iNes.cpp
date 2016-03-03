@@ -11,9 +11,7 @@ uint32_t CPUFrequency = 1789773;
 Cartridge* LoadNESFile(const char* path)
 {
 	// open file
-	FILE *f;
-	errno_t err;
-	err = fopen_s(&f, path, "rb");
+	FILE *f = fopen(path, "rb");
 	fseek(f, 0, SEEK_SET);
 
 	// read file header

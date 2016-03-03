@@ -11,12 +11,11 @@ class StateFile
 public:
 	StateFile(const char* filename, int op)
 	{
-		errno_t err;
 		if (op == StateOp_Load) {
-			err = fopen_s(&fp, filename, "rb");
+			fp = fopen(filename, "rb");
 		}
 		else {
-			err = fopen_s(&fp, filename, "wb");
+			fp = fopen(filename, "wb");
 		}
 	}
 	~StateFile() {}
