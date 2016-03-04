@@ -745,7 +745,7 @@ void Cpu::pla(stepInfo& info) {
 
 // PLP - Pull Processor Status
 void Cpu::plp(stepInfo& info) {
-	SetFlags(pull() & 0xEF | 0x20);
+	SetFlags((pull() & 0xEF) | 0x20);
 }
 
 // ROL - Rotate Left
@@ -786,7 +786,7 @@ void Cpu::ror(stepInfo& info) {
 
 // RTI - Return from Interrupt
 void Cpu::rti(stepInfo& info) {
-	SetFlags(pull() & 0xEF | 0x20);
+	SetFlags((pull() & 0xEF) | 0x20);
 	PC = pull16();
 }
 

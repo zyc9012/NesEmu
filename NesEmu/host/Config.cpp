@@ -1,6 +1,7 @@
 #include "Config.h"
 #include "../utils.h"
 #include <string.h>
+#include <string>
 
 bool ParseCommandLine(Config& config, int argc, char** argv)
 {
@@ -14,7 +15,7 @@ bool ParseCommandLine(Config& config, int argc, char** argv)
 		}
 		else if (strcmp("-scale", argv[i]) == 0) {
 			i++;
-			config.Scale = (float)atof(argv[i]);
+			config.Scale = (float)std::stof(argv[i]);
 		}
 		else if (strcmp("-filter", argv[i]) == 0) {
 			i++;

@@ -18,8 +18,8 @@ OFILES := $(OBJFILES:%=obj/%.o)
 BINFILE = NesEmu
 
 COMMONFLAGS = -O3 -Wno-unused-result
-CINCLUDES = `pkg-config --cflags portaudio-2.0` `pkg-config --cflags glfw3`
-LDFLAGS_GLEW = -lGLEW
+CINCLUDES = `pkg-config --cflags portaudio-2.0` `pkg-config --cflags glew` `pkg-config --cflags glfw3`
+LDFLAGS_GLEW = `pkg-config --static --libs glew`
 LDFLAGS_GLFW = `pkg-config --static --libs glfw3`
 LDFLAGS_PORTAUDIO = `pkg-config --static --libs portaudio-2.0` 
 LDFLAGS = $(LDFLAGS_GLEW) $(LDFLAGS_GLFW) $(LDFLAGS_PORTAUDIO)
@@ -36,6 +36,9 @@ linux:
 
 mingw:
 	$(MAKE) "BINFILE=NesEmu.exe" "LDFLAGS_GLEW= -static -lglew32" $(BINFILE).exe
+
+osx:
+	$(MAKE) "STRIP=strip" $(BINFILE)
 
 ifeq ($(MAKECMDGOALS),)
 -include Makefile.dep
@@ -72,4 +75,4 @@ $(BINFILE): $(OFILES)
 	$(Q)$(STRIP) bin/$@
 clean:
 	$(E)Removing files
-	$(Q)rm -f bin/$(BINFILE) obj/* Makefile.dep
+	$(Q)rm -r -f bin/$(BINFILE) obj Makefile.dep
