@@ -4,14 +4,31 @@ This is a C++11 port of an NES Emulator
 
 Visit the original Go version at: https://github.com/fogleman/nes
 
-### Dependencies
 
-    glew: http://glew.sourceforge.net/
-    glfw: http://www.glfw.org/
-    portaudio: http://www.portaudio.com/
+### Building
 
-The project can be nicely compiled and run on Visual Studio 2015, solutions
-on other platforms will be added soon.
+#### Windows
+
+Just open the project with Visual Studio 2015 and build.
+
+#### MinGW-w64
+
+    pacman -S mingw-w64-i686-glew
+    pacman -S mingw-w64-i686-glfw
+    pacman -S mingw-w64-i686-portaudio
+    make mingw
+
+#### Ubuntu 14.04
+
+Install glfw3 manually.
+
+    apt-get install portaudio19-dev libglew-dev
+    make linux
+
+#### Max OS X
+
+    brew install portaudio glew homebrew/versions/glfw3
+    make osx
 
 ### Usage
 
@@ -31,7 +48,6 @@ on other platforms will be added soon.
 | B                     | X           |
 | A (Turbo)             | A           |
 | B (Turbo)             | S           |
-| Reset                 | R           |
 
 | State                 | Emulator    |
 | --------------------- | ----------- |
