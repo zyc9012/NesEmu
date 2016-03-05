@@ -18,11 +18,8 @@ OFILES := $(OBJFILES:%=obj/%.o)
 BINFILE = NesEmu
 
 COMMONFLAGS = -O3 -Wno-unused-result
-CINCLUDES = `pkg-config --cflags portaudio-2.0` `pkg-config --cflags glew` `pkg-config --cflags glfw3`
-LDFLAGS_GLEW = `pkg-config --static --libs glew`
-LDFLAGS_GLFW = `pkg-config --static --libs glfw3`
-LDFLAGS_PORTAUDIO = `pkg-config --static --libs portaudio-2.0` 
-LDFLAGS = $(LDFLAGS_GLEW) $(LDFLAGS_GLFW) $(LDFLAGS_PORTAUDIO)
+CINCLUDES = `pkg-config --cflags glew glfw3 portaudio-2.0`
+LDFLAGS = `pkg-config --static --libs glew glfw3 portaudio-2.0`
 
 ifdef DEBUG
 	COMMONFLAGS := $(COMMONFLAGS) -g
@@ -35,7 +32,7 @@ linux:
 	$(MAKE) $(BINFILE)
 
 mingw:
-	$(MAKE) "BINFILE=NesEmu.exe" "LDFLAGS_GLEW= -static -lglew32" $(BINFILE).exe
+	$(MAKE) "BINFILE=NesEmu.exe" "LDFLAGS:= -static $(LDFLAGS)" $(BINFILE).exe
 
 osx:
 	$(MAKE) "STRIP=strip" $(BINFILE)
