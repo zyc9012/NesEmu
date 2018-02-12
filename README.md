@@ -27,7 +27,7 @@ Install glfw3 manually.
 
 #### Max OS X
 
-    brew install portaudio glew homebrew/versions/glfw3
+    brew install portaudio glew glfw3
     make osx
 
 ### Usage
