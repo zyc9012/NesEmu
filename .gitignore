@@ -6,3 +6,4 @@ NesEmu/Debug/
 *.sdf
 obj/
 bin/
+*.dep
