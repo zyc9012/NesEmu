@@ -4,6 +4,7 @@ class Filter
 {
 public:
 	virtual float Step(float x) = 0;
+	virtual ~Filter() {}
 };
 
 class FirstOrderFilter : public Filter

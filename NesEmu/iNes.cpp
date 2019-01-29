@@ -41,7 +41,7 @@ Cartridge* LoadNESFile(const char* path)
 	if ((header.Control1 & 4) == 4) {
 		uint8_t* trainer = new uint8_t[512];
 		fread(trainer, 512, 1, f);
-		delete trainer;
+		delete[] trainer;
 	}
 
 	// read prg-rom bank(s)
