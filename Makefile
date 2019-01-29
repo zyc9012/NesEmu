@@ -35,7 +35,7 @@ mingw:
 	$(MAKE) "BINFILE=NesEmu.exe" "LDFLAGS:= -static $(LDFLAGS)" $(BINFILE).exe
 
 osx:
-	$(MAKE) "STRIP=strip" $(BINFILE)
+	$(MAKE) "STRIP=strip" "LDFLAGS:= $(LDFLAGS) -framework OpenGL" $(BINFILE)
 
 ifeq ($(MAKECMDGOALS),)
 -include Makefile.dep
