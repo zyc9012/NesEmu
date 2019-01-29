@@ -39,7 +39,7 @@ uint8_t instructionModes[256]{
 
 // instructionSizes indicates the size of each instruction in uint8_ts
 uint8_t instructionSizes[256]{
-	1, 2, 0, 0, 2, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0,
+	2, 2, 0, 0, 2, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0,
 	2, 2, 0, 0, 2, 2, 2, 0, 1, 3, 1, 0, 3, 3, 3, 0,
 	3, 2, 0, 0, 2, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0,
 	2, 2, 0, 0, 2, 2, 2, 0, 1, 3, 1, 0, 3, 3, 3, 0,
@@ -426,10 +426,10 @@ int Cpu::Step() {
 		address = uint8_t(Read(PC + 1));
 		break;
 	case modeZeroPageX:
-		address = uint8_t(Read(PC + 1) + X);
+		address = uint8_t(Read(PC + 1) + X) & 0xFF;
 		break;
 	case modeZeroPageY:
-		address = uint8_t(Read(PC + 1) + Y);
+		address = uint8_t(Read(PC + 1) + Y) & 0xFF;
 		break;
 	}
 

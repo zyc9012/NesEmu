@@ -150,12 +150,12 @@ void Apu::stepFrameCounter() {
 		case 5:
 			frameValue = (frameValue + 1) % 5;
 			switch (frameValue) {
-				case 1:
-				case 3:
-					stepEnvelope();
-					break;
 				case 0:
 				case 2:
+					stepEnvelope();
+					break;
+				case 1:
+				case 3:
 					stepEnvelope();
 					stepSweep();
 					stepLength();
@@ -332,11 +332,11 @@ void Apu::writeFrameCounter(uint8_t value) {
 	framePeriod = 4 + ((value>>7)&1);
 	frameIRQ = ((value>>6)&1) == 0;
 	// frameValue = 0
-	// if framePeriod == 5 {
-	// 	stepEnvelope()
-	// 	stepSweep()
-	// 	stepLength()
-	// }
+	if (framePeriod == 5) {
+		stepEnvelope();
+		stepSweep();
+		stepLength();
+	}
 }
 
 // Pulse
@@ -403,7 +403,7 @@ void Pulse::writeControl(uint8_t value) {
 
 void Pulse::writeSweep(uint8_t value) {
 	sweepEnabled = ((value>>7)&1) == 1;
-	sweepPeriod = (value >> 4) & 7;
+	sweepPeriod = ((value>>4)&7) + 1;
 	sweepNegate = ((value>>3)&1) == 1;
 	sweepShift = value & 7;
 	sweepReload = true;
@@ -579,15 +579,15 @@ void Triangle::stepCounter() {
 }
 
 uint8_t Triangle::output() {
-	//if (!enabled) {
-	//	return 0;
-	//}
-	//if (lengthValue == 0) {
-	//	return 0;
-	//}
-	//if (counterValue == 0) {
-	//	return 0;
-	//}
+	if (!enabled) {
+		return 0;
+	}
+	if (lengthValue == 0) {
+		return 0;
+	}
+	if (counterValue == 0) {
+		return 0;
+	}
 	return triangleTable[dutyValue];
 }
 
