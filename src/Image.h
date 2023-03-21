@@ -11,7 +11,7 @@ public:
   void SetColor(int x, int y, uint32_t color);
   int width, height;
   uint32_t* bytes;
-  size_t byte_len;
+  uint32_t byte_len;
 };
 
 #endif

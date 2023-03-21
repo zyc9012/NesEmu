@@ -109,7 +109,8 @@ void Host::Run()
   SDL_Quit();
 }
 
-int SDL_main(int argc, char** argv)
+#undef main
+int main(int argc, char** argv)
 {
   Config config;
   if (!ParseCommandLine(config, argc, argv)) {

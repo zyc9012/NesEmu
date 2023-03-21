@@ -232,7 +232,7 @@ void Ppu::writeOAMAddress(uint8_t value) {
 // $2004: OAMDATA (read)
 uint8_t Ppu::readOAMData() {
   auto data = oamData[oamAddress];
-  if (oamAddress & 0x03 == 0x02) {
+  if ((oamAddress & 0x03) == 0x02) {
     data = data & 0xE3;
   }
   return data;

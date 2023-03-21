@@ -22,4 +22,4 @@ add_executable(NesEmu ${SRCS})
 
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
-target_link_libraries(NesEmu SDL2::SDL2-static SDL2::SDL2main)
+target_link_libraries(NesEmu SDL2::SDL2-static)

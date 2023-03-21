@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <memory.h>
+#include <string>
 #include <stdio.h>
 #include "Cartridge.h"
 #include "iNes.h"
