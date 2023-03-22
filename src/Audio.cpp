@@ -51,6 +51,10 @@ void Audio::Push(float out)
   buffer[bufferPtr++] = out;
   if (bufferPtr >= FRAMES_PER_BUFFER)
   {
+    while (SDL_GetQueuedAudioSize(audioDev) > 4096) {
+      // The queue is considered full, sleep the main thread a little for the audio to catch up
+      SDL_Delay(1);
+    }
     bufferPtr = 0;
     SDL_QueueAudio(audioDev, buffer, FRAMES_PER_BUFFER * sizeof(float));
   }
