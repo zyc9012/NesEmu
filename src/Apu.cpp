@@ -587,9 +587,9 @@ uint8_t Triangle::output() {
   if (lengthValue == 0) {
     return 0;
   }
-  if (counterValue == 0) {
-    return 0;
-  }
+  // if (counterValue == 0) {
+  //   return 0;
+  // }
   return triangleTable[dutyValue];
 }
 
