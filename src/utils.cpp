@@ -5,6 +5,7 @@
 #include "Mapper1.h"
 #include "Mapper2.h"
 #include "Mapper4.h"
+#include "Mapper10.h"
 #include "Cartridge.h"
 
 Mapper* CreateMapper(Console* console)
@@ -19,6 +20,8 @@ Mapper* CreateMapper(Console* console)
     return new Mapper1(cartridge);
   case 4:
     return new Mapper4(console, cartridge);
+  case 10:
+    return new Mapper10(cartridge);
   default:
     log("unsupported mapper: %d", cartridge->_Mapper);
     return nullptr;
