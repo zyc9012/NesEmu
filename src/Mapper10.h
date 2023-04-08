@@ -19,14 +19,15 @@ public:
   virtual bool Load(StateFile*) override;
 
   Cartridge* cartridge;
-  int prgBanks;
-  int prgBank1;
-  int prgBank2;
-  int chrBanks;
-  int chrBank1;
-  int chrBank2;
-	uint8_t	reg[4];
-	uint8_t	latchA, latchB;
+  int prgBanks = 0;
+  int prgBank1 = 0;
+  int prgBank2 = 0;
+  int chrBanks = 0;
+  int chrBank1 = 0;
+  int chrBank2 = 0;
+	uint8_t	reg[4] = {0,};
+	uint8_t	latchA = 0;
+  uint8_t latchB = 0;
 };
 
 #endif

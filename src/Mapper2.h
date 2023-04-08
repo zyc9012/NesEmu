@@ -19,9 +19,9 @@ public:
   virtual bool Load(StateFile*) override;
 
   Cartridge* cartridge;
-  int prgBanks;
-  int prgBank1;
-  int prgBank2;
+  int prgBanks = 0;
+  int prgBank1 = 0;
+  int prgBank2 = 0;
 };
 
 #endif

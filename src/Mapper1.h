@@ -28,15 +28,15 @@ public:
   void updateOffsets();
 
   Cartridge* cartridge;
-  uint8_t shiftRegister;
-  uint8_t control;
-  uint8_t prgMode;
-  uint8_t chrMode;
-  uint8_t prgBank;
-  uint8_t chrBank0;
-  uint8_t chrBank1;
-  int prgOffsets[2];
-  int chrOffsets[2];
+  uint8_t shiftRegister = 0;
+  uint8_t control = 0;
+  uint8_t prgMode = 0;
+  uint8_t chrMode = 0;
+  uint8_t prgBank = 0;
+  uint8_t chrBank0 = 0;
+  uint8_t chrBank1 = 0;
+  int prgOffsets[2] = {0,};
+  int chrOffsets[2] = {0,};
 };
 
 #endif

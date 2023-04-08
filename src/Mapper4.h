@@ -34,15 +34,15 @@ public:
 
   Cartridge* cartridge;
   Console* console;
-  uint8_t _register;
-  uint8_t registers[8];
-  uint8_t prgMode;
-  uint8_t chrMode;
-  int prgOffsets[4];
-  int chrOffsets[8];
-  uint8_t reload;
-  uint8_t counter;
-  bool irqEnable;
+  uint8_t _register = 0;
+  uint8_t registers[8] = {0,};
+  uint8_t prgMode = 0;
+  uint8_t chrMode = 0;
+  int prgOffsets[4] = {0,};
+  int chrOffsets[8] = {0,};
+  uint8_t reload = 0;
+  uint8_t counter = 0;
+  bool irqEnable = false;
 };
 
 #endif
