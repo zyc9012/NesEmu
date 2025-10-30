@@ -1,7 +1,7 @@
-#include "Cpu.h"
-#include "Memory.h"
-#include "Console.h"
-#include "StateFile.h"
+#include "cpu.h"
+#include "memory.h"
+#include "console.h"
+#include "statefile.h"
 
 stepInfo fakeStepInfo;
 

@@ -1,7 +1,7 @@
-#include "Graphics.h"
-#include "Host.h"
-#include "Console.h"
-#include "Image.h"
+#include "graphics.h"
+#include "host.h"
+#include "console.h"
+#include "image.h"
 
 Graphics::Graphics(Host* host)
 {

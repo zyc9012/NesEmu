@@ -1,12 +1,12 @@
-#include "Mapper.h"
-#include "Mapper4.h"
-#include "Ppu.h"
-#include "Console.h"
-#include "Cpu.h"
-#include "Memory.h"
-#include "Cartridge.h"
+#include "mapper.h"
+#include "mapper4.h"
+#include "ppu.h"
+#include "console.h"
+#include "cpu.h"
+#include "memory.h"
+#include "cartridge.h"
 #include "utils.h"
-#include "StateFile.h"
+#include "statefile.h"
 
 Mapper4::Mapper4(Console* console, Cartridge* cartridge)
 {

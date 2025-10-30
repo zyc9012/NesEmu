@@ -1,11 +1,11 @@
-#include "Memory.h"
-#include "Ppu.h"
-#include "Apu.h"
-#include "Controller.h"
-#include "Mapper.h"
+#include "memory.h"
+#include "ppu.h"
+#include "apu.h"
+#include "controller.h"
+#include "mapper.h"
 #include "utils.h"
-#include "Console.h"
-#include "Cartridge.h"
+#include "console.h"
+#include "cartridge.h"
 
 uint16_t MirrorLookup[][4]{
   { 0, 0, 1, 1 },

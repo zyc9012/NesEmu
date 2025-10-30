@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "utils.h"
-#include "Mapper.h"
-#include "Mapper1.h"
-#include "Mapper2.h"
-#include "Mapper3.h"
-#include "Mapper4.h"
-#include "Mapper10.h"
-#include "Cartridge.h"
+#include "mapper.h"
+#include "mapper1.h"
+#include "mapper2.h"
+#include "mapper3.h"
+#include "mapper4.h"
+#include "mapper10.h"
+#include "cartridge.h"
 
 Mapper* CreateMapper(Console* console)
 {

@@ -1,9 +1,9 @@
-#include "Apu.h"
-#include "iNes.h"
-#include "Console.h"
-#include "Cpu.h"
+#include "apu.h"
+#include "ines.h"
+#include "console.h"
+#include "cpu.h"
 #include "utils.h"
-#include "StateFile.h"
+#include "statefile.h"
 
 double frameCounterRate = CPUFrequency / 240.0;
 

@@ -1,8 +1,8 @@
-#include "Mapper.h"
-#include "Mapper3.h"
-#include "Cartridge.h"
+#include "mapper.h"
+#include "mapper3.h"
+#include "cartridge.h"
 #include "utils.h"
-#include "StateFile.h"
+#include "statefile.h"
 
 Mapper3::Mapper3(Cartridge* cartridge)
 {

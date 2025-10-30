@@ -1,8 +1,8 @@
-#include "Input.h"
-#include "Host.h"
-#include "Console.h"
-#include "Ppu.h"
-#include "Controller.h"
+#include "input.h"
+#include "host.h"
+#include "console.h"
+#include "ppu.h"
+#include "controller.h"
 
 Input::Input(Host* host)
 {

@@ -1,10 +1,10 @@
-#include "Ppu.h"
-#include "Cpu.h"
-#include "Palette.h"
-#include "Console.h"
-#include "Memory.h"
-#include "Image.h"
-#include "StateFile.h"
+#include "ppu.h"
+#include "cpu.h"
+#include "palette.h"
+#include "console.h"
+#include "memory.h"
+#include "image.h"
+#include "statefile.h"
 
 Ppu::Ppu(Console* console)
 {

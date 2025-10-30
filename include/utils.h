@@ -2,8 +2,8 @@
 #define _UTILS_H
 
 #include <string>
-#include "Mapper.h"
-#include "Console.h"
+#include "mapper.h"
+#include "console.h"
 
 Mapper* CreateMapper(Console* console);
 std::string GetStateFileName(const char* romFile);

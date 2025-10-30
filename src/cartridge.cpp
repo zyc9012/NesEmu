@@ -1,5 +1,5 @@
-#include "Cartridge.h"
-#include "StateFile.h"
+#include "cartridge.h"
+#include "statefile.h"
 
 
 Cartridge::Cartridge(uint8_t* prg, int prg_len, uint8_t* chr, int chr_len, uint8_t mapper, uint8_t mirror, uint8_t battery)

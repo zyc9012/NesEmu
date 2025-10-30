@@ -16,7 +16,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
 
 file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
-file(GLOB_RECURSE HEADERS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.h")
+file(GLOB_RECURSE HEADERS RELATIVE ${CMAKE_SOURCE_DIR} "include/*.h")
 
 # Create executable
 add_executable(nes-emu ${SOURCES} ${HEADERS})

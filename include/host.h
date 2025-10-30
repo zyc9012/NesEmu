@@ -1,7 +1,7 @@
 #ifndef _HOST_H
 #define _HOST_H
 
-#include "Config.h"
+#include "config.h"
 #include "SDL3/SDL.h"
 
 class Console;

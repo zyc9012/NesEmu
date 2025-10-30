@@ -1,9 +1,9 @@
-#include "Mapper.h"
-#include "Mapper10.h"
-#include "Cartridge.h"
-#include "Memory.h"
+#include "mapper.h"
+#include "mapper10.h"
+#include "cartridge.h"
+#include "memory.h"
 #include "utils.h"
-#include "StateFile.h"
+#include "statefile.h"
 
 Mapper10::Mapper10(Cartridge* cartridge)
 {

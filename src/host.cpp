@@ -1,8 +1,8 @@
-#include "Host.h"
-#include "Graphics.h"
-#include "Audio.h"
-#include "Input.h"
-#include "Console.h"
+#include "host.h"
+#include "graphics.h"
+#include "audio.h"
+#include "input.h"
+#include "console.h"
 #include "utils.h"
 
 Host::Host(Config* config)

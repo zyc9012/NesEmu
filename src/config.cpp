@@ -1,4 +1,4 @@
-#include "Config.h"
+#include "config.h"
 #include "utils.h"
 
 bool ParseCommandLine(Config& config, int argc, char** argv)

@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <string>
 #include <stdio.h>
-#include "Cartridge.h"
-#include "iNes.h"
+#include "cartridge.h"
+#include "ines.h"
 #include "utils.h"
 
 uint32_t iNESFileMagic = 0x1a53454e;

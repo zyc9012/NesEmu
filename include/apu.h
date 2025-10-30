@@ -2,7 +2,7 @@
 #define _APU_H
 
 #include <stdint.h>
-#include "Audio.h"
+#include "audio.h"
 class Console;
 class Cpu;
 class FilterChain;
