@@ -1,84 +1,92 @@
 #ifndef _CPU_H
 #define _CPU_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <array>
+#include <memory>
+
 class Memory;
 class Console;
 class StateFile;
 
-enum interruptTypes {
-  interruptNone = 1,
-  interruptNMI,
-  interruptIRQ,
+enum class InterruptType : uint8_t {
+  None = 1,
+  NMI,
+  IRQ,
 };
 
-enum addressingModes {
-  modeAbsolute = 1,
-  modeAbsoluteX,
-  modeAbsoluteY,
-  modeAccumulator,
-  modeImmediate,
-  modeImplied,
-  modeIndexedIndirect,
-  modeIndirect,
-  modeIndirectIndexed,
-  modeRelative,
-  modeZeroPage,
-  modeZeroPageX,
-  modeZeroPageY,
+enum class AddressingMode : uint8_t {
+  Absolute = 1,
+  AbsoluteX,
+  AbsoluteY,
+  Accumulator,
+  Immediate,
+  Implied,
+  IndexedIndirect,
+  Indirect,
+  IndirectIndexed,
+  Relative,
+  ZeroPage,
+  ZeroPageX,
+  ZeroPageY,
 };
 
-typedef struct stepInfo {
+struct StepInfo {
   uint16_t address;
   uint16_t pc;
-  uint8_t	 mode;
-} stepInfo;
+  uint8_t mode;
+};
 
 class Cpu;
-typedef void(Cpu::*InstrExecFunc)(stepInfo&);
+using InstrExecFunc = void(Cpu::*)(StepInfo&);
 
 class Cpu
 {
 public:
-  Cpu(Console* console);
+  explicit Cpu(Console* console);
   ~Cpu();
+  
+  Cpu(const Cpu&) = delete;
+  Cpu& operator=(const Cpu&) = delete;
+  Cpu(Cpu&&) = delete;
+  Cpu& operator=(Cpu&&) = delete;
 
   bool Save(StateFile*);
   bool Load(StateFile*);
 
-  uint8_t mem[0x10000];
+  std::array<uint8_t, 0x10000> mem{};
   void Reset();
   int Step();
   void triggerNMI();
   void triggerIRQ();
   uint8_t Read(uint16_t address);
   void Write(uint16_t address, uint8_t value);
-  uint64_t Cycles; // number of cycles
-  uint8_t interrupt;   // interrupt type to perform
-  int stall;    // number of cycles to stall
+  uint64_t Cycles{0}; // number of cycles
+  InterruptType interrupt{InterruptType::None};   // interrupt type to perform
+  int stall{0};    // number of cycles to stall
 
 private:
-  Memory* memory;  // memory interface
-  uint16_t PC; // program counter
-  uint8_t SP;   // stack pointer
-  uint8_t A;   // accumulator
-  uint8_t X;   // x register
-  uint8_t Y;   // y register
-  uint8_t C;   // carry flag
-  uint8_t Z;   // zero flag
-  uint8_t I;   // interrupt disable flag
-  uint8_t D;   // decimal mode flag
-  uint8_t B;   // break command flag
-  uint8_t U;   // unused flag
-  uint8_t V;   // overflow flag
-  uint8_t N;   // negative flag
+  std::unique_ptr<Memory> memory;  // memory interface
+  uint16_t PC{0}; // program counter
+  uint8_t SP{0};   // stack pointer
+  uint8_t A{0};   // accumulator
+  uint8_t X{0};   // x register
+  uint8_t Y{0};   // y register
+  uint8_t C{0};   // carry flag
+  uint8_t Z{0};   // zero flag
+  uint8_t I{0};   // interrupt disable flag
+  uint8_t D{0};   // decimal mode flag
+  uint8_t B{0};   // break command flag
+  uint8_t U{0};   // unused flag
+  uint8_t V{0};   // overflow flag
+  uint8_t N{0};   // negative flag
 
 
-  InstrExecFunc *table;
+  std::unique_ptr<InstrExecFunc[]> table;
 
   void createTable();
-  bool pagesDiffer(uint16_t a, uint16_t b);
-  void addBranchCycles(stepInfo& info);
+  bool pagesDiffer(uint16_t a, uint16_t b) const;
+  void addBranchCycles(StepInfo& info);
   void compare(uint8_t a, uint8_t b);
   uint16_t Read16(uint16_t address);
   uint16_t read16bug(uint16_t address);
@@ -86,7 +94,7 @@ private:
   uint8_t pull();
   void push16(uint16_t value);
   uint16_t pull16();
-  uint8_t Flags();
+  uint8_t Flags() const;
   void SetFlags(uint8_t flags);
   void setZ(uint8_t value);
   void setN(uint8_t value);
@@ -94,81 +102,81 @@ private:
 
   void nmi();
   void irq();
-  void adc(stepInfo& info);
-  void AND(stepInfo& info);
-  void asl(stepInfo& info);
-  void bcc(stepInfo& info);
-  void bcs(stepInfo& info);
-  void beq(stepInfo& info);
-  void bit(stepInfo& info);
-  void bmi(stepInfo& info);
-  void bne(stepInfo& info);
-  void bpl(stepInfo& info);
-  void brk(stepInfo& info);
-  void bvc(stepInfo& info);
-  void bvs(stepInfo& info);
-  void clc(stepInfo& info);
-  void cld(stepInfo& info);
-  void cli(stepInfo& info);
-  void clv(stepInfo& info);
-  void cmp(stepInfo& info);
-  void cpx(stepInfo& info);
-  void cpy(stepInfo& info);
-  void dec(stepInfo& info);
-  void dex(stepInfo& info);
-  void dey(stepInfo& info);
-  void eor(stepInfo& info);
-  void inc(stepInfo& info);
-  void inx(stepInfo& info);
-  void iny(stepInfo& info);
-  void jmp(stepInfo& info);
-  void jsr(stepInfo& info);
-  void lda(stepInfo& info);
-  void ldx(stepInfo& info);
-  void ldy(stepInfo& info);
-  void lsr(stepInfo& info);
-  void nop(stepInfo& info);
-  void ora(stepInfo& info);
-  void pha(stepInfo& info);
-  void php(stepInfo& info);
-  void pla(stepInfo& info);
-  void plp(stepInfo& info);
-  void rol(stepInfo& info);
-  void ror(stepInfo& info);
-  void rti(stepInfo& info);
-  void rts(stepInfo& info);
-  void sbc(stepInfo& info);
-  void sec(stepInfo& info);
-  void sed(stepInfo& info);
-  void sei(stepInfo& info);
-  void sta(stepInfo& info);
-  void stx(stepInfo& info);
-  void sty(stepInfo& info);
-  void tax(stepInfo& info);
-  void tay(stepInfo& info);
-  void tsx(stepInfo& info);
-  void txa(stepInfo& info);
-  void txs(stepInfo& info);
-  void tya(stepInfo& info);
-  void ahx(stepInfo& info);
-  void alr(stepInfo& info);
-  void anc(stepInfo& info);
-  void arr(stepInfo& info);
-  void axs(stepInfo& info);
-  void dcp(stepInfo& info);
-  void isc(stepInfo& info);
-  void kil(stepInfo& info);
-  void las(stepInfo& info);
-  void lax(stepInfo& info);
-  void rla(stepInfo& info);
-  void rra(stepInfo& info);
-  void sax(stepInfo& info);
-  void shx(stepInfo& info);
-  void shy(stepInfo& info);
-  void slo(stepInfo& info);
-  void sre(stepInfo& info);
-  void tas(stepInfo& info);
-  void xaa(stepInfo& info);
+  void adc(StepInfo& info);
+  void AND(StepInfo& info);
+  void asl(StepInfo& info);
+  void bcc(StepInfo& info);
+  void bcs(StepInfo& info);
+  void beq(StepInfo& info);
+  void bit(StepInfo& info);
+  void bmi(StepInfo& info);
+  void bne(StepInfo& info);
+  void bpl(StepInfo& info);
+  void brk(StepInfo& info);
+  void bvc(StepInfo& info);
+  void bvs(StepInfo& info);
+  void clc(StepInfo& info);
+  void cld(StepInfo& info);
+  void cli(StepInfo& info);
+  void clv(StepInfo& info);
+  void cmp(StepInfo& info);
+  void cpx(StepInfo& info);
+  void cpy(StepInfo& info);
+  void dec(StepInfo& info);
+  void dex(StepInfo& info);
+  void dey(StepInfo& info);
+  void eor(StepInfo& info);
+  void inc(StepInfo& info);
+  void inx(StepInfo& info);
+  void iny(StepInfo& info);
+  void jmp(StepInfo& info);
+  void jsr(StepInfo& info);
+  void lda(StepInfo& info);
+  void ldx(StepInfo& info);
+  void ldy(StepInfo& info);
+  void lsr(StepInfo& info);
+  void nop(StepInfo& info);
+  void ora(StepInfo& info);
+  void pha(StepInfo& info);
+  void php(StepInfo& info);
+  void pla(StepInfo& info);
+  void plp(StepInfo& info);
+  void rol(StepInfo& info);
+  void ror(StepInfo& info);
+  void rti(StepInfo& info);
+  void rts(StepInfo& info);
+  void sbc(StepInfo& info);
+  void sec(StepInfo& info);
+  void sed(StepInfo& info);
+  void sei(StepInfo& info);
+  void sta(StepInfo& info);
+  void stx(StepInfo& info);
+  void sty(StepInfo& info);
+  void tax(StepInfo& info);
+  void tay(StepInfo& info);
+  void tsx(StepInfo& info);
+  void txa(StepInfo& info);
+  void txs(StepInfo& info);
+  void tya(StepInfo& info);
+  void ahx(StepInfo& info);
+  void alr(StepInfo& info);
+  void anc(StepInfo& info);
+  void arr(StepInfo& info);
+  void axs(StepInfo& info);
+  void dcp(StepInfo& info);
+  void isc(StepInfo& info);
+  void kil(StepInfo& info);
+  void las(StepInfo& info);
+  void lax(StepInfo& info);
+  void rla(StepInfo& info);
+  void rra(StepInfo& info);
+  void sax(StepInfo& info);
+  void shx(StepInfo& info);
+  void shy(StepInfo& info);
+  void slo(StepInfo& info);
+  void sre(StepInfo& info);
+  void tas(StepInfo& info);
+  void xaa(StepInfo& info);
 
 };
 

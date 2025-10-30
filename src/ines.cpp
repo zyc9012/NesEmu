@@ -1,66 +1,73 @@
-#include <stdint.h>
+#include <cstdint>
 #include <string>
-#include <stdio.h>
+#include <cstdio>
+#include <vector>
+#include <memory>
 #include "cartridge.h"
 #include "ines.h"
 #include "utils.h"
 
-uint32_t iNESFileMagic = 0x1a53454e;
-uint32_t CPUFrequency = 1789773;
-
-Cartridge* LoadNESFile(const char* path)
+std::unique_ptr<Cartridge> LoadNESFile(const std::string& path)
 {
   // open file
-  FILE *f = fopen(path, "rb");
+  FILE *f = fopen(path.c_str(), "rb");
+  if (!f) {
+    log("Failed to open file: %s", path.c_str());
+    return nullptr;
+  }
   fseek(f, 0, SEEK_SET);
 
   // read file header
   iNESFileHeader header;
-  fread(&header, sizeof(header), 1, f);
+  if (fread(&header, sizeof(header), 1, f) != 1) {
+    log("Failed to read file header");
+    fclose(f);
+    return nullptr;
+  }
 
   // verify header magic number
   if (header.Magic != iNESFileMagic) {
     log("Invalid .nes file");
+    fclose(f);
     return nullptr;
   }
 
   // mapper type
-  auto mapper1 = header.Control1 >> 4;
-  auto mapper2 = header.Control2 >> 4;
-  auto mapper = mapper1 | mapper2 << 4;
+  const auto mapper1 = header.Control1 >> 4;
+  const auto mapper2 = header.Control2 >> 4;
+  const auto mapper = static_cast<uint8_t>(mapper1 | (mapper2 << 4));
 
   // mirroring type
-  auto mirror1 = header.Control1 & 1;
-  auto mirror2 = (header.Control1 >> 3) & 1;
-  auto mirror = mirror1 | mirror2 << 1;
+  const auto mirror1 = header.Control1 & 1;
+  const auto mirror2 = (header.Control1 >> 3) & 1;
+  const auto mirror = static_cast<uint8_t>(mirror1 | (mirror2 << 1));
 
   // battery-backed RAM
-  auto battery = (header.Control1 >> 1) & 1;
+  const auto battery = static_cast<uint8_t>((header.Control1 >> 1) & 1);
 
   // read trainer if present (unused)
   if ((header.Control1 & 4) == 4) {
-    uint8_t* trainer = new uint8_t[512];
-    fread(trainer, 512, 1, f);
-    delete[] trainer;
+    std::vector<uint8_t> trainer(512);
+    fread(trainer.data(), 512, 1, f);
   }
 
   // read prg-rom bank(s)
-  int prg_len = int(header.NumPRG) * 16384;
-  auto prg = new uint8_t[prg_len];
-  fread(prg, prg_len, 1, f);
+  const size_t prg_len = static_cast<size_t>(header.NumPRG) * 16384;
+  std::vector<uint8_t> prg(prg_len);
+  fread(prg.data(), prg_len, 1, f);
 
-  int chr_len;
-  uint8_t* chr;
+  size_t chr_len;
+  std::vector<uint8_t> chr;
   // provide chr-rom/ram if not in file
   if (header.NumCHR == 0) {
     chr_len = 8192;
-    chr = new uint8_t[8192];
+    chr.resize(chr_len, 0);
   }
   // read chr-rom bank(s)
   else {
-    chr_len = int(header.NumCHR) * 8192;
-    chr = new uint8_t[chr_len];
-    fread(chr, chr_len, 1, f);
+    chr_len = static_cast<size_t>(header.NumCHR) * 8192;
+    chr.resize(chr_len);
+    fread(chr.data(), chr_len, 1, f);
   }
 
   fclose(f);
@@ -72,5 +79,5 @@ Cartridge* LoadNESFile(const char* path)
   log("CHR: %dK", header.NumCHR * 8);
 
   // success
-  return new Cartridge(prg, prg_len, chr, chr_len, mapper, mirror, battery);
+  return std::make_unique<Cartridge>(std::move(prg), std::move(chr), mapper, mirror, battery);
 }

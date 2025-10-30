@@ -18,18 +18,13 @@ Mapper4::Mapper4(Console* console, Cartridge* cartridge)
   prgOffsets[3] = prgBankOffset(-1);
 }
 
-
-Mapper4::~Mapper4()
-{
-}
-
 bool Mapper4::Save(StateFile* f) {
   f->Put(&_register);
-  f->Put(registers, 8);
+  f->Put(registers);
   f->Put(&prgMode);
   f->Put(&chrMode);
-  f->Put(prgOffsets, 4);
-  f->Put(chrOffsets, 8);
+  f->Put(prgOffsets);
+  f->Put(chrOffsets);
   f->Put(&reload);
   f->Put(&counter);
   f->Put(&irqEnable);
@@ -38,11 +33,11 @@ bool Mapper4::Save(StateFile* f) {
 
 bool Mapper4::Load(StateFile* f) {
   f->Get(&_register);
-  f->Get(registers, 8);
+  f->Get(registers);
   f->Get(&prgMode);
   f->Get(&chrMode);
-  f->Get(prgOffsets, 4);
-  f->Get(chrOffsets, 8);
+  f->Get(prgOffsets);
+  f->Get(chrOffsets);
   f->Get(&reload);
   f->Get(&counter);
   f->Get(&irqEnable);
@@ -50,7 +45,7 @@ bool Mapper4::Load(StateFile* f) {
 }
 
 void Mapper4::Step() {
-  auto ppu = console->PPU;
+  auto& ppu = console->PPU;
   if (ppu->Cycle != 280) { // TODO: this *should* be 260
     return;
   }
@@ -155,15 +150,12 @@ void Mapper4::writeBankData(uint8_t value) {
 void Mapper4::writeMirror(uint8_t value) {
   switch (value & 1) {
   case 0:
-    cartridge->Mirror = MirrorVertical;
+    cartridge->mirror = static_cast<uint8_t>(MirroringMode::Vertical);
     break;
   case 1:
-    cartridge->Mirror = MirrorHorizontal;
+    cartridge->mirror = static_cast<uint8_t>(MirroringMode::Horizontal);
     break;
   }
-}
-
-void Mapper4::writeProtect(uint8_t value) {
 }
 
 void Mapper4::writeIRQLatch(uint8_t value) {
@@ -182,26 +174,26 @@ void Mapper4::writeIRQEnable(uint8_t value) {
   irqEnable = true;
 }
 
-int Mapper4::prgBankOffset(int index) {
+int Mapper4::prgBankOffset(int index) const {
   if (index >= 0x80) {
     index -= 0x100;
   }
-  index %= cartridge->PRG_len / 0x2000;
+  index %= static_cast<int>(cartridge->PRG.size()) / 0x2000;
   auto offset = index * 0x2000;
   if (offset < 0) {
-    offset += cartridge->PRG_len;
+    offset += static_cast<int>(cartridge->PRG.size());
   }
   return offset;
 }
 
-int Mapper4::chrBankOffset(int index) {
+int Mapper4::chrBankOffset(int index) const {
   if (index >= 0x80) {
     index -= 0x100;
   }
-  index %= cartridge->CHR_len / 0x0400;
+  index %= static_cast<int>(cartridge->CHR.size()) / 0x0400;
   auto offset = index * 0x0400;
   if (offset < 0) {
-    offset += cartridge->CHR_len;
+    offset += static_cast<int>(cartridge->CHR.size());
   }
   return offset;
 }

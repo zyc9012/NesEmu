@@ -3,11 +3,11 @@
 #include "console.h"
 #include "statefile.h"
 
-stepInfo fakeStepInfo;
+StepInfo fakeStepInfo;
 
 Cpu::Cpu(Console* console)
 {
-  memory = new CpuMemory(console);
+  memory = std::make_unique<CpuMemory>(console);
   createTable();
   Reset();
 }
@@ -137,7 +137,7 @@ const char* instructionNames[256]{
 
 // createTable builds a function table for each instruction
 void Cpu::createTable() {
-  table = new InstrExecFunc[256]{
+  table.reset(new InstrExecFunc[256]{
     &Cpu::brk, &Cpu::ora, &Cpu::kil, &Cpu::slo, &Cpu::nop, &Cpu::ora, &Cpu::asl, &Cpu::slo,
     &Cpu::php, &Cpu::ora, &Cpu::asl, &Cpu::anc, &Cpu::nop, &Cpu::ora, &Cpu::asl, &Cpu::slo,
     &Cpu::bpl, &Cpu::ora, &Cpu::kil, &Cpu::slo, &Cpu::nop, &Cpu::ora, &Cpu::asl, &Cpu::slo,
@@ -170,7 +170,7 @@ void Cpu::createTable() {
     &Cpu::inx, &Cpu::sbc, &Cpu::nop, &Cpu::sbc, &Cpu::cpx, &Cpu::sbc, &Cpu::inc, &Cpu::isc,
     &Cpu::beq, &Cpu::sbc, &Cpu::kil, &Cpu::isc, &Cpu::nop, &Cpu::sbc, &Cpu::inc, &Cpu::isc,
     &Cpu::sed, &Cpu::sbc, &Cpu::nop, &Cpu::isc, &Cpu::nop, &Cpu::sbc, &Cpu::inc, &Cpu::isc,
-  };
+  });
 }
 
 bool Cpu::Save(StateFile* f) {
@@ -221,13 +221,13 @@ void Cpu::Reset() {
 }
 
 // pagesDiffer returns true if the two addresses reference different pages
-bool Cpu::pagesDiffer(uint16_t a, uint16_t b) {
+bool Cpu::pagesDiffer(uint16_t a, uint16_t b) const {
   return (a & 0xFF00) != (b & 0xFF00);
 }
 
 // addBranchCycles adds a cycle for taking a branch and adds another cycle
 // if the branch jumps to a new page
-void Cpu::addBranchCycles(stepInfo& info) {
+void Cpu::addBranchCycles(StepInfo& info) {
   Cycles++;
   if (pagesDiffer(info.pc, info.address)) {
     Cycles++;
@@ -297,7 +297,7 @@ uint16_t Cpu::pull16() {
 }
 
 // Flags returns the processor status flags
-uint8_t Cpu::Flags() {
+uint8_t Cpu::Flags() const {
   uint8_t flags = 0;
   flags |= C << 0;
   flags |= Z << 1;
@@ -350,13 +350,13 @@ void Cpu::setZN(uint8_t value) {
 
 // triggerNMI causes a non-maskable interrupt to occur on the next cycle
 void Cpu::triggerNMI() {
-  interrupt = interruptNMI;
+  interrupt = InterruptType::NMI;
 }
 
 // triggerIRQ causes an IRQ interrupt to occur on the next cycle
 void Cpu::triggerIRQ() {
   if (I == 0) {
-    interrupt = interruptIRQ;
+    interrupt = InterruptType::IRQ;
   }
 }
 
@@ -370,12 +370,14 @@ int Cpu::Step() {
   auto cycles = Cycles;
 
   switch (interrupt) {
-  case interruptNMI:
+  case InterruptType::NMI:
     nmi(); break;
-  case interruptIRQ:
+  case InterruptType::IRQ:
     irq(); break;
+  case InterruptType::None:
+    break;
   }
-  interrupt = interruptNone;
+  interrupt = InterruptType::None;
 
   auto opcode = Read(PC);
   auto mode = instructionModes[opcode];
@@ -383,37 +385,37 @@ int Cpu::Step() {
   uint16_t address, offset;
   bool pageCrossed = false;
   switch (mode) {
-  case modeAbsolute:
+  case static_cast<uint8_t>(AddressingMode::Absolute):
     address = Read16(PC + 1);
     break;
-  case modeAbsoluteX:
+  case static_cast<uint8_t>(AddressingMode::AbsoluteX):
     address = Read16(PC + 1) + uint16_t(X);
     pageCrossed = pagesDiffer(address - uint16_t(X), address);
     break;
-  case modeAbsoluteY:
+  case static_cast<uint8_t>(AddressingMode::AbsoluteY):
     address = Read16(PC + 1) + uint16_t(Y);
     pageCrossed = pagesDiffer(address - uint16_t(Y), address);
     break;
-  case modeAccumulator:
+  case static_cast<uint8_t>(AddressingMode::Accumulator):
     address = 0;
     break;
-  case modeImmediate:
+  case static_cast<uint8_t>(AddressingMode::Immediate):
     address = PC + 1;
     break;
-  case modeImplied:
+  case static_cast<uint8_t>(AddressingMode::Implied):
     address = 0;
     break;
-  case modeIndexedIndirect:
+  case static_cast<uint8_t>(AddressingMode::IndexedIndirect):
     address = read16bug(uint8_t(Read(PC + 1) + X));
     break;
-  case modeIndirect:
+  case static_cast<uint8_t>(AddressingMode::Indirect):
     address = read16bug(Read16(PC + 1));
     break;
-  case modeIndirectIndexed:
+  case static_cast<uint8_t>(AddressingMode::IndirectIndexed):
     address = read16bug(uint16_t(Read(PC + 1))) + uint16_t(Y);
     pageCrossed = pagesDiffer(address - uint16_t(Y), address);
     break;
-  case modeRelative:
+  case static_cast<uint8_t>(AddressingMode::Relative):
     offset = uint16_t(Read(PC + 1));
     if (offset < 0x80) {
       address = PC + 2 + offset;
@@ -422,13 +424,13 @@ int Cpu::Step() {
       address = PC + 2 + offset - 0x100;
     }
     break;
-  case modeZeroPage:
+  case static_cast<uint8_t>(AddressingMode::ZeroPage):
     address = uint8_t(Read(PC + 1));
     break;
-  case modeZeroPageX:
+  case static_cast<uint8_t>(AddressingMode::ZeroPageX):
     address = uint8_t(Read(PC + 1) + X) & 0xFF;
     break;
-  case modeZeroPageY:
+  case static_cast<uint8_t>(AddressingMode::ZeroPageY):
     address = uint8_t(Read(PC + 1) + Y) & 0xFF;
     break;
   }
@@ -438,7 +440,7 @@ int Cpu::Step() {
   if (pageCrossed) {
     Cycles += uint64_t(instructionPageCycles[opcode]);
   }
-  stepInfo info;
+  StepInfo info;
   info.address = address;
   info.pc = PC;
   info.mode = mode;
@@ -468,7 +470,7 @@ void Cpu::irq() {
 }
 
 // ADC - Add with Carry
-void Cpu::adc(stepInfo& info) {
+void Cpu::adc(StepInfo& info) {
   auto a = A;
   auto b = Read(info.address);
   auto c = C;
@@ -489,14 +491,14 @@ void Cpu::adc(stepInfo& info) {
 }
 
 // AND - Logical AND
-void Cpu::AND(stepInfo& info) {
+void Cpu::AND(StepInfo& info) {
   A = A & Read(info.address);
   setZN(A);
 }
 
 // ASL - Arithmetic Shift Left
-void Cpu::asl(stepInfo& info) {
-  if (info.mode == modeAccumulator) {
+void Cpu::asl(StepInfo& info) {
+  if (info.mode == static_cast<uint8_t>(AddressingMode::Accumulator)) {
     C = (A >> 7) & 1;
     A <<= 1;
     setZN(A);
@@ -511,7 +513,7 @@ void Cpu::asl(stepInfo& info) {
 }
 
 // BCC - Branch if Carry Clear
-void Cpu::bcc(stepInfo& info) {
+void Cpu::bcc(StepInfo& info) {
   if (C == 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -519,7 +521,7 @@ void Cpu::bcc(stepInfo& info) {
 }
 
 // BCS - Branch if Carry Set
-void Cpu::bcs(stepInfo& info) {
+void Cpu::bcs(StepInfo& info) {
   if (C != 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -527,7 +529,7 @@ void Cpu::bcs(stepInfo& info) {
 }
 
 // BEQ - Branch if Equal
-void Cpu::beq(stepInfo& info) {
+void Cpu::beq(StepInfo& info) {
   if (Z != 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -535,7 +537,7 @@ void Cpu::beq(stepInfo& info) {
 }
 
 // BIT - Bit Test
-void Cpu::bit(stepInfo& info) {
+void Cpu::bit(StepInfo& info) {
   auto value = Read(info.address);
   V = (value >> 6) & 1;
   setZ(value & A);
@@ -543,7 +545,7 @@ void Cpu::bit(stepInfo& info) {
 }
 
 // BMI - Branch if Minus
-void Cpu::bmi(stepInfo& info) {
+void Cpu::bmi(StepInfo& info) {
   if (N != 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -551,7 +553,7 @@ void Cpu::bmi(stepInfo& info) {
 }
 
 // BNE - Branch if Not Equal
-void Cpu::bne(stepInfo& info) {
+void Cpu::bne(StepInfo& info) {
   if (Z == 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -559,7 +561,7 @@ void Cpu::bne(stepInfo& info) {
 }
 
 // BPL - Branch if Positive
-void Cpu::bpl(stepInfo& info) {
+void Cpu::bpl(StepInfo& info) {
   if (N == 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -567,7 +569,7 @@ void Cpu::bpl(stepInfo& info) {
 }
 
 // BRK - Force Interrupt
-void Cpu::brk(stepInfo& info) {
+void Cpu::brk(StepInfo& info) {
   push16(PC);
   php(info);
   sei(info);
@@ -575,7 +577,7 @@ void Cpu::brk(stepInfo& info) {
 }
 
 // BVC - Branch if Overflow Clear
-void Cpu::bvc(stepInfo& info) {
+void Cpu::bvc(StepInfo& info) {
   if (V == 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -583,7 +585,7 @@ void Cpu::bvc(stepInfo& info) {
 }
 
 // BVS - Branch if Overflow Set
-void Cpu::bvs(stepInfo& info) {
+void Cpu::bvs(StepInfo& info) {
   if (V != 0) {
     PC = info.address;
     addBranchCycles(info);
@@ -591,119 +593,119 @@ void Cpu::bvs(stepInfo& info) {
 }
 
 // CLC - Clear Carry Flag
-void Cpu::clc(stepInfo& info) {
+void Cpu::clc(StepInfo& info) {
   C = 0;
 }
 
 // CLD - Clear Decimal Mode
-void Cpu::cld(stepInfo& info) {
+void Cpu::cld(StepInfo& info) {
   D = 0;
 }
 
 // CLI - Clear Interrupt Disable
-void Cpu::cli(stepInfo& info) {
+void Cpu::cli(StepInfo& info) {
   I = 0;
 }
 
 // CLV - Clear Overflow Flag
-void Cpu::clv(stepInfo& info) {
+void Cpu::clv(StepInfo& info) {
   V = 0;
 }
 
 // CMP - Compare
-void Cpu::cmp(stepInfo& info) {
+void Cpu::cmp(StepInfo& info) {
   auto value = Read(info.address);
   compare(A, value);
 }
 
 // CPX - Compare X Register
-void Cpu::cpx(stepInfo& info) {
+void Cpu::cpx(StepInfo& info) {
   auto value = Read(info.address);
   compare(X, value);
 }
 
 // CPY - Compare Y Register
-void Cpu::cpy(stepInfo& info) {
+void Cpu::cpy(StepInfo& info) {
   auto value = Read(info.address);
   compare(Y, value);
 }
 
 // DEC - Decrement Memory
-void Cpu::dec(stepInfo& info) {
+void Cpu::dec(StepInfo& info) {
   auto value = Read(info.address) - 1;
   Write(info.address, value);
   setZN(value);
 }
 
 // DEX - Decrement X Register
-void Cpu::dex(stepInfo& info) {
+void Cpu::dex(StepInfo& info) {
   X--;
   setZN(X);
 }
 
 // DEY - Decrement Y Register
-void Cpu::dey(stepInfo& info) {
+void Cpu::dey(StepInfo& info) {
   Y--;
   setZN(Y);
 }
 
 // EOR - Exclusive OR
-void Cpu::eor(stepInfo& info) {
+void Cpu::eor(StepInfo& info) {
   A = A ^ Read(info.address);
   setZN(A);
 }
 
 // INC - Increment Memory
-void Cpu::inc(stepInfo& info) {
+void Cpu::inc(StepInfo& info) {
   auto value = Read(info.address) + 1;
   Write(info.address, value);
   setZN(value);
 }
 
 // INX - Increment X Register
-void Cpu::inx(stepInfo& info) {
+void Cpu::inx(StepInfo& info) {
   X++;
   setZN(X);
 }
 
 // INY - Increment Y Register
-void Cpu::iny(stepInfo& info) {
+void Cpu::iny(StepInfo& info) {
   Y++;
   setZN(Y);
 }
 
 // JMP - Jump
-void Cpu::jmp(stepInfo& info) {
+void Cpu::jmp(StepInfo& info) {
   PC = info.address;
 }
 
 // JSR - Jump to Subroutine
-void Cpu::jsr(stepInfo& info) {
+void Cpu::jsr(StepInfo& info) {
   push16(PC - 1);
   PC = info.address;
 }
 
 // LDA - Load Accumulator
-void Cpu::lda(stepInfo& info) {
+void Cpu::lda(StepInfo& info) {
   A = Read(info.address);
   setZN(A);
 }
 
 // LDX - Load X Register
-void Cpu::ldx(stepInfo& info) {
+void Cpu::ldx(StepInfo& info) {
   X = Read(info.address);
   setZN(X);
 }
 
 // LDY - Load Y Register
-void Cpu::ldy(stepInfo& info) {
+void Cpu::ldy(StepInfo& info) {
   Y = Read(info.address);
   setZN(Y);
 }
 
 // LSR - Logical Shift Right
-void Cpu::lsr(stepInfo& info) {
-  if (info.mode == modeAccumulator) {
+void Cpu::lsr(StepInfo& info) {
+  if (info.mode == static_cast<uint8_t>(AddressingMode::Accumulator)) {
     C = A & 1;
     A >>= 1;
     setZN(A);
@@ -718,39 +720,39 @@ void Cpu::lsr(stepInfo& info) {
 }
 
 // NOP - No Operation
-void Cpu::nop(stepInfo& info) {
+void Cpu::nop(StepInfo& info) {
 }
 
 // ORA - Logical Inclusive OR
-void Cpu::ora(stepInfo& info) {
+void Cpu::ora(StepInfo& info) {
   A = A | Read(info.address);
   setZN(A);
 }
 
 // PHA - Push Accumulator
-void Cpu::pha(stepInfo& info) {
+void Cpu::pha(StepInfo& info) {
   push(A);
 }
 
 // PHP - Push Processor Status
-void Cpu::php(stepInfo& info) {
+void Cpu::php(StepInfo& info) {
   push(Flags() | 0x10);
 }
 
 // PLA - Pull Accumulator
-void Cpu::pla(stepInfo& info) {
+void Cpu::pla(StepInfo& info) {
   A = pull();
   setZN(A);
 }
 
 // PLP - Pull Processor Status
-void Cpu::plp(stepInfo& info) {
+void Cpu::plp(StepInfo& info) {
   SetFlags((pull() & 0xEF) | 0x20);
 }
 
 // ROL - Rotate Left
-void Cpu::rol(stepInfo& info) {
-  if (info.mode == modeAccumulator) {
+void Cpu::rol(StepInfo& info) {
+  if (info.mode == static_cast<uint8_t>(AddressingMode::Accumulator)) {
     auto c = C;
     C = (A >> 7) & 1;
     A = (A << 1) | c;
@@ -767,8 +769,8 @@ void Cpu::rol(stepInfo& info) {
 }
 
 // ROR - Rotate Right
-void Cpu::ror(stepInfo& info) {
-  if (info.mode == modeAccumulator) {
+void Cpu::ror(StepInfo& info) {
+  if (info.mode == static_cast<uint8_t>(AddressingMode::Accumulator)) {
     auto c = C;
     C = A & 1;
     A = (A >> 1) | (c << 7);
@@ -785,18 +787,18 @@ void Cpu::ror(stepInfo& info) {
 }
 
 // RTI - Return from Interrupt
-void Cpu::rti(stepInfo& info) {
+void Cpu::rti(StepInfo& info) {
   SetFlags((pull() & 0xEF) | 0x20);
   PC = pull16();
 }
 
 // RTS - Return from Subroutine
-void Cpu::rts(stepInfo& info) {
+void Cpu::rts(StepInfo& info) {
   PC = pull16() + 1;
 }
 
 // SBC - Subtract with Carry
-void Cpu::sbc(stepInfo& info) {
+void Cpu::sbc(StepInfo& info) {
   auto a = A;
   auto b = Read(info.address);
   auto c = C;
@@ -817,125 +819,125 @@ void Cpu::sbc(stepInfo& info) {
 }
 
 // SEC - Set Carry Flag
-void Cpu::sec(stepInfo& info) {
+void Cpu::sec(StepInfo& info) {
   C = 1;
 }
 
 // SED - Set Decimal Flag
-void Cpu::sed(stepInfo& info) {
+void Cpu::sed(StepInfo& info) {
   D = 1;
 }
 
 // SEI - Set Interrupt Disable
-void Cpu::sei(stepInfo& info) {
+void Cpu::sei(StepInfo& info) {
   I = 1;
 }
 
 // STA - Store Accumulator
-void Cpu::sta(stepInfo& info) {
+void Cpu::sta(StepInfo& info) {
   Write(info.address, A);
 }
 
 // STX - Store X Register
-void Cpu::stx(stepInfo& info) {
+void Cpu::stx(StepInfo& info) {
   Write(info.address, X);
 }
 
 // STY - Store Y Register
-void Cpu::sty(stepInfo& info) {
+void Cpu::sty(StepInfo& info) {
   Write(info.address, Y);
 }
 
 // TAX - Transfer Accumulator to X
-void Cpu::tax(stepInfo& info) {
+void Cpu::tax(StepInfo& info) {
   X = A;
   setZN(X);
 }
 
 // TAY - Transfer Accumulator to Y
-void Cpu::tay(stepInfo& info) {
+void Cpu::tay(StepInfo& info) {
   Y = A;
   setZN(Y);
 }
 
 // TSX - Transfer Stack Pointer to X
-void Cpu::tsx(stepInfo& info) {
+void Cpu::tsx(StepInfo& info) {
   X = SP;
   setZN(X);
 }
 
 // TXA - Transfer X to Accumulator
-void Cpu::txa(stepInfo& info) {
+void Cpu::txa(StepInfo& info) {
   A = X;
   setZN(A);
 }
 
 // TXS - Transfer X to Stack Pointer
-void Cpu::txs(stepInfo& info) {
+void Cpu::txs(StepInfo& info) {
   SP = X;
 }
 
 // TYA - Transfer Y to Accumulator
-void Cpu::tya(stepInfo& info) {
+void Cpu::tya(StepInfo& info) {
   A = Y;
   setZN(A);
 }
 
 // illegal opcodes below
 
-void Cpu::ahx(stepInfo& info) {
+void Cpu::ahx(StepInfo& info) {
 }
 
-void Cpu::alr(stepInfo& info) {
+void Cpu::alr(StepInfo& info) {
 }
 
-void Cpu::anc(stepInfo& info) {
+void Cpu::anc(StepInfo& info) {
 }
 
-void Cpu::arr(stepInfo& info) {
+void Cpu::arr(StepInfo& info) {
 }
 
-void Cpu::axs(stepInfo& info) {
+void Cpu::axs(StepInfo& info) {
 }
 
-void Cpu::dcp(stepInfo& info) {
+void Cpu::dcp(StepInfo& info) {
 }
 
-void Cpu::isc(stepInfo& info) {
+void Cpu::isc(StepInfo& info) {
 }
 
-void Cpu::kil(stepInfo& info) {
+void Cpu::kil(StepInfo& info) {
 }
 
-void Cpu::las(stepInfo& info) {
+void Cpu::las(StepInfo& info) {
 }
 
-void Cpu::lax(stepInfo& info) {
+void Cpu::lax(StepInfo& info) {
 }
 
-void Cpu::rla(stepInfo& info) {
+void Cpu::rla(StepInfo& info) {
 }
 
-void Cpu::rra(stepInfo& info) {
+void Cpu::rra(StepInfo& info) {
 }
 
-void Cpu::sax(stepInfo& info) {
+void Cpu::sax(StepInfo& info) {
 }
 
-void Cpu::shx(stepInfo& info) {
+void Cpu::shx(StepInfo& info) {
 }
 
-void Cpu::shy(stepInfo& info) {
+void Cpu::shy(StepInfo& info) {
 }
 
-void Cpu::slo(stepInfo& info) {
+void Cpu::slo(StepInfo& info) {
 }
 
-void Cpu::sre(stepInfo& info) {
+void Cpu::sre(StepInfo& info) {
 }
 
-void Cpu::tas(stepInfo& info) {
+void Cpu::tas(StepInfo& info) {
 }
 
-void Cpu::xaa(stepInfo& info) {
+void Cpu::xaa(StepInfo& info) {
 }

@@ -8,10 +8,10 @@
 Mapper10::Mapper10(Cartridge* cartridge)
 {
   this->cartridge = cartridge;
-  prgBanks = cartridge->PRG_len / 0x4000;
+  prgBanks = static_cast<int>(cartridge->PRG.size()) / 0x4000;
   prgBank1 = 0;
   prgBank2 = prgBanks - 1;
-  chrBanks = cartridge->CHR_len / 0x1000;
+  chrBanks = static_cast<int>(cartridge->CHR.size()) / 0x1000;
   chrBank1 = 0;
   chrBank2 = 0;
 
@@ -22,11 +22,6 @@ Mapper10::Mapper10(Cartridge* cartridge)
 
   latchA = 0xFE;
   latchB = 0xFE;
-}
-
-
-Mapper10::~Mapper10()
-{
 }
 
 
@@ -42,9 +37,6 @@ bool Mapper10::Load(StateFile* f) {
   f->Get(&prgBank1);
   f->Get(&prgBank2);
   return true;
-}
-
-void Mapper10::Step() {
 }
 
 uint8_t Mapper10::Read(uint16_t address) {
@@ -131,9 +123,9 @@ void Mapper10::Write(uint16_t address, uint8_t value) {
       break;
     case 0xF000:
       if (value & 0x01)
-        cartridge->Mirror = MirrorHorizontal;
+        cartridge->mirror = static_cast<uint8_t>(MirroringMode::Horizontal);
       else
-        cartridge->Mirror = MirrorVertical;
+        cartridge->mirror = static_cast<uint8_t>(MirroringMode::Vertical);
       break;
     }
   }

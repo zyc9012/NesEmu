@@ -1,26 +1,32 @@
 #ifndef _CARTRIDGE_H
 #define _CARTRIDGE_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <vector>
+#include <array>
+
 class StateFile;
 
 class Cartridge
 {
 public:
-  Cartridge(uint8_t* prg, int prg_len, uint8_t* chr, int chr_len, uint8_t mapper, uint8_t mirror, uint8_t battery);
-  ~Cartridge();
+  Cartridge(std::vector<uint8_t>&& prg, std::vector<uint8_t>&& chr, uint8_t mapper, uint8_t mirror, uint8_t battery);
+  ~Cartridge() = default;
+  
+  Cartridge(const Cartridge&) = delete;
+  Cartridge& operator=(const Cartridge&) = delete;
+  Cartridge(Cartridge&&) = default;
+  Cartridge& operator=(Cartridge&&) = default;
 
   bool Save(StateFile*);
   bool Load(StateFile*);
 
-  uint8_t* PRG;       // PRG-ROM banks
-  int PRG_len;
-  uint8_t* CHR;       // CHR-ROM banks
-  int CHR_len;
-  uint8_t* SRAM;      // Save RAM
-  uint8_t _Mapper;    // mapper type
-  uint8_t Mirror;     // mirroring mode
-  uint8_t Battery;    // battery present
+  std::vector<uint8_t> PRG;       // PRG-ROM banks
+  std::vector<uint8_t> CHR;       // CHR-ROM banks
+  std::array<uint8_t, 0x2000> SRAM{};  // Save RAM (8KB)
+  uint8_t mapper{0};              // mapper type
+  uint8_t mirror{0};              // mirroring mode
+  uint8_t battery{0};             // battery present
 };
 
 #endif

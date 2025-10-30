@@ -1,36 +1,24 @@
 #include "cartridge.h"
 #include "statefile.h"
 
-
-Cartridge::Cartridge(uint8_t* prg, int prg_len, uint8_t* chr, int chr_len, uint8_t mapper, uint8_t mirror, uint8_t battery)
+Cartridge::Cartridge(std::vector<uint8_t>&& prg, std::vector<uint8_t>&& chr, uint8_t mapper, uint8_t mirror, uint8_t battery)
+  : PRG(std::move(prg)), CHR(std::move(chr)), mapper(mapper), mirror(mirror), battery(battery)
 {
-  PRG = prg;
-  PRG_len = prg_len;
-  CHR = chr;
-  CHR_len = chr_len;
-  SRAM = new uint8_t[0x2000];
-  _Mapper = mapper;
-  Mirror = mirror;
-  Battery = battery;
-}
-
-
-Cartridge::~Cartridge()
-{
+  SRAM.fill(0);
 }
 
 bool Cartridge::Save(StateFile* f) {
-  f->Put(PRG, PRG_len);
-  f->Put(CHR, CHR_len);
-  f->Put(SRAM, 0x2000);
-  f->Put(&Mirror);
+  f->Put(PRG);
+  f->Put(CHR);
+  f->Put(SRAM);
+  f->Put(&mirror);
   return true;
 }
 
 bool Cartridge::Load(StateFile* f) {
-  f->Get(PRG, PRG_len);
-  f->Get(CHR, CHR_len);
-  f->Get(SRAM, 0x2000);
-  f->Get(&Mirror);
+  f->Get(PRG);
+  f->Get(CHR);
+  f->Get(SRAM);
+  f->Get(&mirror);
   return true;
 }

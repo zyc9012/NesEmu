@@ -2,11 +2,14 @@
 #define _UTILS_H
 
 #include <string>
-#include "mapper.h"
-#include "console.h"
+#include <memory>
 
-Mapper* CreateMapper(Console* console);
-std::string GetStateFileName(const char* romFile);
+class Mapper;
+class Console;
+
+std::unique_ptr<Mapper> CreateMapper(Console* console);
+std::string GetStateFileName(const std::string& romFile);
+
 void log(const char* fmt, ...);
 
 #endif

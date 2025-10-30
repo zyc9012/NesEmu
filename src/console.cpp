@@ -2,6 +2,7 @@
 #include "cartridge.h"
 #include "controller.h"
 #include "console.h"
+#include "mapper.h"
 #include "utils.h"
 #include "cpu.h"
 #include "apu.h"
@@ -9,30 +10,28 @@
 #include "ines.h"
 #include "palette.h"
 #include "statefile.h"
+#include <stdexcept>
+#include <algorithm>
 
-Console::Console(const char* path)
+Console::Console(const std::string& path)
 {
-  _Cartridge = LoadNESFile(path);
-  if (_Cartridge == nullptr) {
-    throw nullptr;
+  cartridge = LoadNESFile(path);
+  if (!cartridge) {
+    throw std::runtime_error("Failed to load cartridge");
   }
-  RAM = new uint8_t[2048];
-  memset(RAM, 0, 2048);
-  Controller1 = new Controller();
-  Controller2 = new Controller();
-  _Mapper = CreateMapper(this);
-  if (_Mapper == nullptr) {
-    throw nullptr;
+  RAM.fill(0);
+  controller1 = std::make_unique<Controller>();
+  controller2 = std::make_unique<Controller>();
+  mapper = CreateMapper(this);
+  if (!mapper) {
+    throw std::runtime_error("Failed to create mapper");
   }
-  CPU = new Cpu(this);
-  APU = new Apu(this);
-  PPU = new Ppu(this);
+  CPU = std::make_unique<Cpu>(this);
+  APU = std::make_unique<Apu>(this);
+  PPU = std::make_unique<Ppu>(this);
 }
 
-
-Console::~Console()
-{
-}
+Console::~Console() = default;
 
 
 void Console::Reset() {
@@ -40,11 +39,11 @@ void Console::Reset() {
 }
 
 int Console::Step() {
-  auto cpuCycles = CPU->Step();
-  auto ppuCycles = cpuCycles * 3;
+  const auto cpuCycles = CPU->Step();
+  const auto ppuCycles = cpuCycles * 3;
   for (int i = 0; i < ppuCycles; i++) {
     PPU->Step();
-    _Mapper->Step();
+    mapper->Step();
   }
   for (int i = 0; i < cpuCycles; i++) {
     APU->Step();
@@ -54,7 +53,7 @@ int Console::Step() {
 
 int Console::StepFrame() {
   auto cpuCycles = 0;
-  auto frame = PPU->Frame;
+  const auto frame = PPU->Frame;
   while (frame == PPU->Frame) {
     cpuCycles += Step();
   }
@@ -62,26 +61,26 @@ int Console::StepFrame() {
 }
 
 void Console::StepSeconds(double seconds) {
-  auto cycles = int(CPUFrequency * seconds);
+  auto cycles = static_cast<int>(CPUFrequency * seconds);
   while (cycles > 0) {
     cycles -= Step();
   }
 }
 
 Image* Console::Buffer() {
-  return PPU->front;
+  return PPU->front.get();
 }
 
-uint32_t Console::BackgroundColor() {
-  return Palette[PPU->readPalette(0)%64];
+uint32_t Console::BackgroundColor() const {
+  return Palette[PPU->readPalette(0) % 64];
 }
 
-void Console::SetButtons1(bool buttons[8]) {
-  Controller1->SetButtons(buttons);
+void Console::SetButtons1(const std::array<bool, 8>& buttons) {
+  controller1->SetButtons(buttons);
 }
 
-void Console::SetButtons2(bool buttons[8]) {
-  Controller2->SetButtons(buttons);
+void Console::SetButtons2(const std::array<bool, 8>& buttons) {
+  controller2->SetButtons(buttons);
 }
 
 void Console::SetAudioChannel(Audio* channel) {
@@ -95,46 +94,46 @@ void Console::SetAudioSampleRate(double sampleRate) {
   }
 }
 
-bool Console::SaveState(const char* filename) {
+bool Console::SaveState(const std::string& filename) {
   try
   {
-    StateFile f(filename, StateOp_Save);
+    StateFile f(filename, StateFileOp::Save);
     Save(&f);
     f.Close();
-    log("Saved state: %s", filename);
+    log("Saved state: %s", filename.c_str());
   }
-  catch (const std::exception&) {}
+  catch (const std::exception&) { return false; }
   return true;
 }
 
 bool Console::Save(StateFile* f) {
-  f->Put(RAM, 2048);
+  f->Put(RAM);
   CPU->Save(f);
   APU->Save(f);
   PPU->Save(f);
-  _Cartridge->Save(f);
-  _Mapper->Save(f);
+  cartridge->Save(f);
+  mapper->Save(f);
   return true;
 }
 
-bool Console::LoadState(const char* filename) {
+bool Console::LoadState(const std::string& filename) {
   try
   {
-    StateFile f(filename, StateOp_Load);
+    StateFile f(filename, StateFileOp::Load);
     Load(&f);
     f.Close();
-    log("Loaded state: %s", filename);
+    log("Loaded state: %s", filename.c_str());
   }
-  catch (const std::exception&) {}
+  catch (const std::exception&) { return false; }
   return true;
 }
 
 bool Console::Load(StateFile* f) {
-  f->Get(RAM, 2048);
+  f->Get(RAM);
   CPU->Load(f);
   APU->Load(f);
   PPU->Load(f);
-  _Cartridge->Load(f);
-  _Mapper->Load(f);
+  cartridge->Load(f);
+  mapper->Load(f);
   return true;
 }

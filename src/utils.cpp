@@ -1,5 +1,6 @@
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
+#include <memory>
 #include "utils.h"
 #include "mapper.h"
 #include "mapper1.h"
@@ -8,41 +9,44 @@
 #include "mapper4.h"
 #include "mapper10.h"
 #include "cartridge.h"
+#include "console.h"
 
-Mapper* CreateMapper(Console* console)
+std::unique_ptr<Mapper> CreateMapper(Console* console)
 {
-  auto cartridge = console->_Cartridge;
-  switch (cartridge->_Mapper)
+  auto* cartridge = console->cartridge.get();
+  switch (cartridge->mapper)
   {
   case 0:
   case 2:
-    return new Mapper2(cartridge);
+    return std::make_unique<Mapper2>(cartridge);
   case 1:
-    return new Mapper1(cartridge);
+    return std::make_unique<Mapper1>(cartridge);
   case 3:
-    return new Mapper3(cartridge);
+    return std::make_unique<Mapper3>(cartridge);
   case 4:
-    return new Mapper4(console, cartridge);
+    return std::make_unique<Mapper4>(console, cartridge);
   case 10:
-    return new Mapper10(cartridge);
+    return std::make_unique<Mapper10>(cartridge);
   default:
-    log("unsupported mapper: %d", cartridge->_Mapper);
+    log("unsupported mapper: %d", cartridge->mapper);
     return nullptr;
   }
 }
 
-std::string GetStateFileName(const char* romFile)
+std::string GetStateFileName(const std::string& romFile)
 {
-  std::string s(romFile);
-  int c = s.find_last_of('.');
-  return s.substr(0, c) + ".state";
+  const auto pos = romFile.find_last_of('.');
+  if (pos != std::string::npos) {
+    return romFile.substr(0, pos) + ".state";
+  }
+  return romFile + ".state";
 }
 
 void log(const char* fmt, ...)
 {
   va_list argptr;
   va_start(argptr, fmt);
-  vfprintf(stderr, fmt, argptr);
+  std::vfprintf(stderr, fmt, argptr);
   va_end(argptr);
-  vfprintf(stderr, "\n", argptr);
+  std::fprintf(stderr, "\n");
 }

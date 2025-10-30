@@ -35,11 +35,6 @@ Audio::Audio()
 
 Audio::~Audio()
 {
-  SDL_PauseAudioDevice(audioDev);
-  SDL_DestroyAudioStream(audioStream);
-  SDL_CloseAudioDevice(audioDev);
-
-  if (recorder != nullptr) recorder->Stop();
 }
 
 void Audio::Start()
@@ -57,14 +52,22 @@ void Audio::Push(float out)
       SDL_Delay(1);
     }
     bufferPtr = 0;
-    SDL_PutAudioStreamData(audioStream, buffer, FRAMES_PER_BUFFER * sizeof(float));
+    SDL_PutAudioStreamData(audioStream, buffer.data(), FRAMES_PER_BUFFER * sizeof(float));
   }
 }
 
-
-AudioRecorder::AudioRecorder(const char* filename)
+void Audio::Close()
 {
-  audioOut = fopen(filename, "wb");
+  SDL_PauseAudioDevice(audioDev);
+  SDL_DestroyAudioStream(audioStream);
+  SDL_CloseAudioDevice(audioDev);
+
+  if (recorder) recorder->Stop();
+}
+
+AudioRecorder::AudioRecorder(const std::string& filename)
+{
+  audioOut = fopen(filename.c_str(), "wb");
   fwrite(&wavHeader, sizeof(wavHeader), 1, audioOut);
 }
 
@@ -72,10 +75,10 @@ AudioRecorder::~AudioRecorder()
 {
 }
 
-void AudioRecorder::WriteSamples(float* buf, int count)
+void AudioRecorder::WriteSamples(const float* buf, int count)
 {
   fwrite(buf, sizeof(float)*count, 1, audioOut);
-  totalSampleCount += count;
+  totalSampleCount += static_cast<uint32_t>(count);
 }
 
 void AudioRecorder::Stop()

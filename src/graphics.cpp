@@ -30,7 +30,7 @@ void Graphics::DrawFrame()
   void* pixels;
   int pitch;
   SDL_LockTexture(texture, NULL, &pixels, &pitch);
-  memcpy(pixels, img->bytes, img->byte_len);
+  memcpy(pixels, img->GetBytes(), img->GetByteLen());
   SDL_UnlockTexture(texture);
   SDL_RenderTexture(renderer, texture, NULL, NULL);
   SDL_RenderPresent(renderer);

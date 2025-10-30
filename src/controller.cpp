@@ -1,17 +1,8 @@
 #include "controller.h"
-#include "string.h"
+#include <algorithm>
 
-Controller::Controller()
-{
-}
-
-
-Controller::~Controller()
-{
-}
-
-void Controller::SetButtons(bool buttons[8]) {
-  memcpy(this->buttons, buttons, sizeof(bool)*8);
+void Controller::SetButtons(const std::array<bool, 8>& buttons) {
+  this->buttons = buttons;
 }
 
 uint8_t Controller::Read() {
@@ -20,7 +11,7 @@ uint8_t Controller::Read() {
     value = 1;
   }
   index++;
-  if ((strobe&1) == 1) {
+  if ((strobe & 1) == 1) {
     index = 0;
   }
   return value;
@@ -28,7 +19,7 @@ uint8_t Controller::Read() {
 
 void Controller::Write(uint8_t value) {
   strobe = value;
-  if ((strobe&1) == 1) {
+  if ((strobe & 1) == 1) {
     index = 0;
   }
 }

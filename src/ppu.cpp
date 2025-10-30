@@ -10,25 +10,21 @@ Ppu::Ppu(Console* console)
 {
   initPalette();
   this->console = console;
-  memory = new PpuMemory(console);
-  front = new Image(256, 240);
-  back = new Image(256, 240);
+  memory = std::make_unique<PpuMemory>(console);
+  front = std::make_unique<Image>(256, 240);
+  back = std::make_unique<Image>(256, 240);
   Reset();
 }
 
-
-Ppu::~Ppu()
-{
-}
-
+Ppu::~Ppu() = default;
 
 bool Ppu::Save(StateFile* f) {
   f->Put(&Cycle);
   f->Put(&ScanLine);
   f->Put(&Frame);
-  f->Put(paletteData, 32);
-  f->Put(nameTableData, 2048);
-  f->Put(oamData, 256);
+  f->Put(paletteData);
+  f->Put(nameTableData);
+  f->Put(oamData);
   f->Put(&v);
   f->Put(&t);
   f->Put(&x);
@@ -45,10 +41,10 @@ bool Ppu::Save(StateFile* f) {
   f->Put(&highTileByte);
   f->Put(&tileData);
   f->Put(&spriteCount);
-  f->Put(spritePatterns, 8);
-  f->Put(spritePositions, 8);
-  f->Put(spritePriorities, 8);
-  f->Put(spriteIndexes, 8);
+  f->Put(spritePatterns);
+  f->Put(spritePositions);
+  f->Put(spritePriorities);
+  f->Put(spriteIndexes);
   f->Put(&flagNameTable);
   f->Put(&flagIncrement);
   f->Put(&flagSpriteTable);
@@ -74,9 +70,9 @@ bool Ppu::Load(StateFile* f) {
   f->Get(&Cycle);
   f->Get(&ScanLine);
   f->Get(&Frame);
-  f->Get(paletteData, 32);
-  f->Get(nameTableData, 2048);
-  f->Get(oamData, 256);
+  f->Get(paletteData);
+  f->Get(nameTableData);
+  f->Get(oamData);
   f->Get(&v);
   f->Get(&t);
   f->Get(&x);
@@ -93,10 +89,10 @@ bool Ppu::Load(StateFile* f) {
   f->Get(&highTileByte);
   f->Get(&tileData);
   f->Get(&spriteCount);
-  f->Get(spritePatterns, 8);
-  f->Get(spritePositions, 8);
-  f->Get(spritePriorities, 8);
-  f->Get(spriteIndexes, 8);
+  f->Get(spritePatterns);
+  f->Get(spritePositions);
+  f->Get(spritePriorities);
+  f->Get(spriteIndexes);
   f->Get(&flagNameTable);
   f->Get(&flagIncrement);
   f->Get(&flagSpriteTable);
@@ -127,7 +123,7 @@ void Ppu::Reset() {
   writeOAMAddress(0);
 }
 
-uint8_t Ppu::readPalette(uint16_t address)  {
+uint8_t Ppu::readPalette(uint16_t address) const {
   if ((address >= 16) && (address%4 == 0)) {
     address -= 16;
   }
@@ -230,7 +226,7 @@ void Ppu::writeOAMAddress(uint8_t value) {
 }
 
 // $2004: OAMDATA (read)
-uint8_t Ppu::readOAMData() {
+uint8_t Ppu::readOAMData() const {
   auto data = oamData[oamAddress];
   if ((oamAddress & 0x03) == 0x02) {
     data = data & 0xE3;
@@ -312,7 +308,7 @@ void Ppu::writeData(uint8_t value) {
 
 // $4014: OAMDMA
 void Ppu::writeDMA(uint8_t value) {
-  auto cpu = console->CPU;
+  auto& cpu = console->CPU;
   auto address = uint16_t(value) << 8;
   for (int i = 0; i < 256; i++) {
     oamData[oamAddress] = cpu->Read(address);
@@ -392,9 +388,7 @@ void Ppu::nmiChange() {
 }
 
 void Ppu::setVerticalBlank() {
-  auto tmp = front;
-  front = back;
-  back = tmp;
+  std::swap(front, back);
   nmiOccurred = true;
   nmiChange();
 }
@@ -447,11 +441,11 @@ void Ppu::storeTileData() {
   tileData |= uint64_t(data);
 }
 
-uint32_t Ppu::fetchTileData() {
+uint32_t Ppu::fetchTileData() const {
   return uint32_t(tileData >> 32);
 }
 
-uint8_t Ppu::backgroundPixel() {
+uint8_t Ppu::backgroundPixel() const {
   if (flagShowBackground == 0) {
     return 0;
   }
@@ -459,7 +453,7 @@ uint8_t Ppu::backgroundPixel() {
   return uint8_t(data & 0x0F);
 }
 
-void Ppu::spritePixel(uint8_t& index, uint8_t& sprite)  {
+void Ppu::spritePixel(uint8_t& index, uint8_t& sprite) const {
   if (flagShowSprites == 0) {
     index = 0;
     sprite = 0;

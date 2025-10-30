@@ -27,39 +27,39 @@ Input::~Input()
 void Input::HandleKey(SDL_KeyboardEvent *key)
 {
   auto turbo = (host->console->PPU->Frame % 6) < 3;
-  auto buttons = host->console->Controller1->buttons;
+  auto buttons = host->console->controller1->GetButtons();
   auto isDown = key->down;
 
   switch (key->key) {
     case SDLK_Z:
-      buttons[ButtonA] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::A)] = isDown;
       break;
     case SDLK_A:
-      buttons[ButtonA] = turbo && isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::A)] = turbo && isDown;
       break;
     case SDLK_X:
-      buttons[ButtonB] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::B)] = isDown;
       break;
     case SDLK_S:
-      buttons[ButtonB] = turbo && isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::B)] = turbo && isDown;
       break;
     case SDLK_RSHIFT:
-      buttons[ButtonSelect] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::Select)] = isDown;
       break;
     case SDLK_RETURN:
-      buttons[ButtonStart] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::Start)] = isDown;
       break;
     case SDLK_UP:
-      buttons[ButtonUp] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::Up)] = isDown;
       break;
     case SDLK_DOWN:
-      buttons[ButtonDown] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::Down)] = isDown;
       break;
     case SDLK_LEFT:
-      buttons[ButtonLeft] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::Left)] = isDown;
       break;
     case SDLK_RIGHT:
-      buttons[ButtonRight] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::Right)] = isDown;
       break;
     case SDLK_F5:
       if (isDown) {
@@ -74,92 +74,96 @@ void Input::HandleKey(SDL_KeyboardEvent *key)
     default:
       break;
   }
+  host->console->SetButtons1(buttons);
 }
 
 void Input::HandleJoyAxis(SDL_JoyAxisEvent *axis)
 {
-  auto buttons = host->console->Controller1->buttons;
+  auto buttons = host->console->controller1->GetButtons();
 
   if (axis->value < -3200) {
     if (axis->axis == 0 || axis->axis == 2) {
-      buttons[ButtonLeft] = true;
+      buttons[static_cast<uint8_t>(ControllerButton::Left)] = true;
     } else if (axis->axis == 1 || axis->axis == 3) {
-      buttons[ButtonUp] = true;
+      buttons[static_cast<uint8_t>(ControllerButton::Up)] = true;
     }
   } else if (axis->value > 3200) {
     if (axis->axis == 0 || axis->axis == 2) {
-      buttons[ButtonRight] = true;
+      buttons[static_cast<uint8_t>(ControllerButton::Right)] = true;
     } else if (axis->axis == 1 || axis->axis == 3) {
-      buttons[ButtonDown] = true;
+      buttons[static_cast<uint8_t>(ControllerButton::Down)] = true;
     }
   } else {
-    buttons[ButtonLeft] = false;
-    buttons[ButtonRight] = false;
-    buttons[ButtonUp] = false;
-    buttons[ButtonDown] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Left)] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Right)] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Up)] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Down)] = false;
   }
+  host->console->SetButtons1(buttons);
 }
 
 void Input::HandleJoyHat(SDL_JoyHatEvent *hat)
 {
-  auto buttons = host->console->Controller1->buttons;
+  auto buttons = host->console->controller1->GetButtons();
 
   switch (hat->value) {
   case SDL_HAT_CENTERED:
-    buttons[ButtonLeft] = false;
-    buttons[ButtonRight] = false;
-    buttons[ButtonUp] = false;
-    buttons[ButtonDown] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Left)] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Right)] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Up)] = false;
+    buttons[static_cast<uint8_t>(ControllerButton::Down)] = false;
     break;
   case SDL_HAT_UP:
-    buttons[ButtonUp] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Up)] = true;
     break;
   case SDL_HAT_RIGHT:
-    buttons[ButtonRight] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Right)] = true;
     break;
   case SDL_HAT_DOWN:
-    buttons[ButtonDown] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Down)] = true;
     break;
   case SDL_HAT_LEFT:
-    buttons[ButtonLeft] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Left)] = true;
     break;
   case SDL_HAT_RIGHTUP:
-    buttons[ButtonRight] = true;
-    buttons[ButtonUp] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Right)] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Up)] = true;
     break;
   case SDL_HAT_RIGHTDOWN:
-    buttons[ButtonRight] = true;
-    buttons[ButtonDown] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Right)] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Down)] = true;
     break;
   case SDL_HAT_LEFTUP:
-    buttons[ButtonLeft] = true;
-    buttons[ButtonUp] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Left)] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Up)] = true;
     break;
   case SDL_HAT_LEFTDOWN:
-    buttons[ButtonLeft] = true;
-    buttons[ButtonDown] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Left)] = true;
+    buttons[static_cast<uint8_t>(ControllerButton::Down)] = true;
     break;
   }
+  host->console->SetButtons1(buttons);
 }
 
 void Input::HandleJoyButton(SDL_JoyButtonEvent *button)
 {
-  auto buttons = host->console->Controller1->buttons;
+  auto buttons = host->console->controller1->GetButtons();
   auto isDown = button->down;
   auto turbo = (host->console->PPU->Frame % 6) < 3;
 
   switch (button->button) {
     case 0:
-      buttons[ButtonA] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::A)] = isDown;
       break;
     case 1:
-      buttons[ButtonB] = isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::B)] = isDown;
       break;
     case 2:
-      buttons[ButtonA] = turbo && isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::A)] = turbo && isDown;
       break;
     case 3:
-      buttons[ButtonB] = turbo && isDown;
+      buttons[static_cast<uint8_t>(ControllerButton::B)] = turbo && isDown;
       break;
   }
+  host->console->SetButtons1(buttons);
 }

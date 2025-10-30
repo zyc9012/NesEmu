@@ -7,14 +7,9 @@
 Mapper3::Mapper3(Cartridge* cartridge)
 {
   this->cartridge = cartridge;
-  auto prgBanks = cartridge->PRG_len / 0x4000;
+  auto prgBanks = static_cast<int>(cartridge->PRG.size()) / 0x4000;
   prgBank1 = 0;
   prgBank2 = prgBanks - 1;
-}
-
-
-Mapper3::~Mapper3()
-{
 }
 
 
@@ -30,9 +25,6 @@ bool Mapper3::Load(StateFile* f) {
   f->Get(&prgBank1);
   f->Get(&prgBank2);
   return true;
-}
-
-void Mapper3::Step() {
 }
 
 uint8_t Mapper3::Read(uint16_t address) {

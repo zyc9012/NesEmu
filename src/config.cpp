@@ -1,5 +1,7 @@
 #include "config.h"
 #include "utils.h"
+#include <cstring>
+#include <string>
 
 bool ParseCommandLine(Config& config, int argc, char** argv)
 {
@@ -7,18 +9,18 @@ bool ParseCommandLine(Config& config, int argc, char** argv)
   for (int i = 1; i < argc;)
   {
     if (argv[i][0] != '-') {
-      config.RomFile = string(argv[i]);
+      config.RomFile = std::string(argv[i]);
       romSpecified = true;
     }
-    else if (strcmp("-s", argv[i]) == 0) {
+    else if (std::strcmp("-s", argv[i]) == 0) {
       i++;
-      config.Scale = (float)std::stof(argv[i]);
+      config.Scale = std::stof(argv[i]);
     }
-    else if (strcmp("-f", argv[i]) == 0) {
+    else if (std::strcmp("-f", argv[i]) == 0) {
       i++;
-      if (strcmp("nearest", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_NEAREST;
-      else if (strcmp("linear", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_LINEAR;
-      else if (strcmp("best", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_LINEAR; // "best" maps to linear in SDL3
+      if (std::strcmp("nearest", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_NEAREST;
+      else if (std::strcmp("linear", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_LINEAR;
+      else if (std::strcmp("best", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_LINEAR; // "best" maps to linear in SDL3
       else log("Unknown filter mode, using \"linear\"");
     }
     i++;
@@ -34,7 +36,7 @@ bool ParseCommandLine(Config& config, int argc, char** argv)
     return false;
   }
 
-  config.TimePerFrame = 1.0 / config.TargetFps;
+  config.TimePerFrame = 1.0 / static_cast<double>(config.TargetFps);
 
   return true;
 }

@@ -8,9 +8,9 @@
 Host::Host(Config* config)
 {
   this->config = config;
-  console = new Console(config->RomFile.c_str());
+  console = std::make_unique<Console>(config->RomFile);
   log("Loaded: %s", config->RomFile.c_str());
-  config->StateFileName = GetStateFileName(config->RomFile.c_str());
+  config->StateFileName = GetStateFileName(config->RomFile);
   console->Reset();
 
   bool joystick_enabled = true;
@@ -34,14 +34,14 @@ Host::Host(Config* config)
 
   SDL_GL_SetSwapInterval(1);
 
-  audio = new Audio();
-  console->SetAudioChannel(audio);
+  audio = std::make_unique<Audio>();
+  console->SetAudioChannel(audio.get());
   console->SetAudioSampleRate(44100);
   audio->Start();
 
-  gfx = new Graphics(this);
+  gfx = std::make_unique<Graphics>(this);
 
-  input = new Input(this);
+  input = std::make_unique<Input>(this);
 }
 
 
@@ -101,11 +101,9 @@ void Host::Run()
   }
 
   log("Shutting down...");
-  delete console;
-  delete audio;
-  delete gfx;
-  delete input;
+  // unique_ptr will automatically clean up
 
+  audio->Close();
   SDL_Quit();
 }
 

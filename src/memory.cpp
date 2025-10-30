@@ -28,11 +28,6 @@ CpuMemory::CpuMemory(Console* console)
   this->console = console;
 }
 
-
-CpuMemory::~CpuMemory()
-{
-}
-
 uint8_t CpuMemory::Read(uint16_t address)
 {
   if (address < 0x2000)
@@ -44,15 +39,15 @@ uint8_t CpuMemory::Read(uint16_t address)
   else if (address == 0x4015)
     return console->APU->readRegister(address);
   else if (address == 0x4016)
-    return console->Controller1->Read();
+    return console->controller1->Read();
   else if (address == 0x4017)
-    return console->Controller2->Read();
+    return console->controller2->Read();
   else if (address < 0x6000)
   {
     // TODO: I/O registers
   }
   else if (address >= 0x6000)
-    return console->_Mapper->Read(address);
+    return console->mapper->Read(address);
   else
     log("unhandled cpu memory read at address: 0x%04X\n", address);
   
@@ -72,8 +67,8 @@ void CpuMemory::Write(uint16_t address, uint8_t value) {
     console->APU->writeRegister(address, value);
   else if (address == 0x4016)
   {
-    console->Controller1->Write(value);
-    console->Controller2->Write(value);
+    console->controller1->Write(value);
+    console->controller2->Write(value);
   }
   else if (address == 0x4017)
     console->APU->writeRegister(address, value);
@@ -82,7 +77,7 @@ void CpuMemory::Write(uint16_t address, uint8_t value) {
     // TODO: I/O registers
   }
   else if (address >= 0x6000)
-    console->_Mapper->Write(address, value);
+    console->mapper->Write(address, value);
   else
     log("unhandled cpu memory write at address: 0x%04X", address);
 }
@@ -94,18 +89,13 @@ PpuMemory::PpuMemory(Console* console)
   this->console = console;
 }
 
-
-PpuMemory::~PpuMemory()
-{
-}
-
 uint8_t PpuMemory::Read(uint16_t address) {
   address = address % 0x4000;
   if (address < 0x2000)
-    return console->_Mapper->Read(address);
+    return console->mapper->Read(address);
   else if (address < 0x3F00)
   {
-    auto mode = console->_Cartridge->Mirror;
+    auto mode = console->cartridge->mirror;
     return console->PPU->nameTableData[MirrorAddress(mode, address) % 2048];
   }
   else if (address < 0x4000)
@@ -118,10 +108,10 @@ uint8_t PpuMemory::Read(uint16_t address) {
 void PpuMemory::Write(uint16_t address, uint8_t value) {
   address = address % 0x4000;
   if (address < 0x2000)
-    console->_Mapper->Write(address, value);
+    console->mapper->Write(address, value);
   else if (address < 0x3F00)
   {
-    auto mode = console->_Cartridge->Mirror;
+    auto mode = console->cartridge->mirror;
     console->PPU->nameTableData[MirrorAddress(mode, address) % 2048] = value;
   }
   else if (address < 0x4000)

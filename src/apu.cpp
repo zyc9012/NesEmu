@@ -52,7 +52,7 @@ Apu::Apu(Console* console) {
   noise.shiftRegister = 1;
   pulse1.channel = 1;
   pulse2.channel = 2;
-  dmc.cpu = console->CPU;
+  dmc.cpu = console->CPU.get();
 }
 
 Apu::~Apu()
@@ -108,7 +108,7 @@ void Apu::sendSample() {
   channel->Push(ot);
 }
 
-float Apu::output() {
+float Apu::output() const {
   auto p1 = pulse1.output();
   auto p2 = pulse2.output();
   auto t = triangle.output();
@@ -480,7 +480,7 @@ void Pulse::sweep() {
   }
 }
 
-uint8_t Pulse::output() {
+uint8_t Pulse::output() const {
   if (!enabled) {
     return 0;
   }
@@ -577,7 +577,7 @@ void Triangle::stepCounter() {
   }
 }
 
-uint8_t Triangle::output() {
+uint8_t Triangle::output() const {
   if (!enabled) {
     return 0;
   }
@@ -691,7 +691,7 @@ void Noise::stepLength() {
   }
 }
 
-uint8_t Noise::output() {
+uint8_t Noise::output() const {
   if (!enabled) {
     return 0;
   }
@@ -814,6 +814,6 @@ void DMC::stepShifter() {
   bitCount--;
 }
 
-uint8_t DMC::output() {
+uint8_t DMC::output() const {
   return value;
 }

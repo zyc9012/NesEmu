@@ -14,11 +14,6 @@ Mapper1::Mapper1(Cartridge* cartridge)
 }
 
 
-Mapper1::~Mapper1()
-{
-}
-
-
 bool Mapper1::Save(StateFile* f) {
   f->Put(&shiftRegister);
   f->Put(&control);
@@ -27,8 +22,8 @@ bool Mapper1::Save(StateFile* f) {
   f->Put(&prgBank);
   f->Put(&chrBank0);
   f->Put(&chrBank1);
-  f->Put(prgOffsets, 2);
-  f->Put(chrOffsets, 2);
+  f->Put(prgOffsets);
+  f->Put(chrOffsets);
   return true;
 }
 
@@ -40,13 +35,9 @@ bool Mapper1::Load(StateFile* f) {
   f->Get(&prgBank);
   f->Get(&chrBank0);
   f->Get(&chrBank1);
-  f->Get(prgOffsets, 2);
-  f->Get(chrOffsets, 2);
+  f->Get(prgOffsets);
+  f->Get(chrOffsets);
   return true;
-}
-
-void Mapper1::Step() {
-
 }
 
 uint8_t Mapper1::Read(uint16_t address) {
@@ -125,16 +116,16 @@ void Mapper1::writeControl(uint8_t value) {
   auto mirror = value & 3;
   switch (mirror) {
   case 0:
-    cartridge->Mirror = MirrorSingle0;
+    cartridge->mirror = static_cast<uint8_t>(MirroringMode::Single0);
     break;
   case 1:
-    cartridge->Mirror = MirrorSingle1;
+    cartridge->mirror = static_cast<uint8_t>(MirroringMode::Single1);
     break;
   case 2:
-    cartridge->Mirror = MirrorVertical;
+    cartridge->mirror = static_cast<uint8_t>(MirroringMode::Vertical);
     break;
   case 3:
-    cartridge->Mirror = MirrorHorizontal;
+    cartridge->mirror = static_cast<uint8_t>(MirroringMode::Horizontal);
     break;
   }
   updateOffsets();
@@ -158,26 +149,26 @@ void Mapper1::writePRGBank(uint8_t value) {
   updateOffsets();
 }
 
-int Mapper1::prgBankOffset(int index)  {
+int Mapper1::prgBankOffset(int index) const {
   if (index >= 0x80) {
     index -= 0x100;
   }
-  index %= cartridge->PRG_len / 0x4000;
+  index %= static_cast<int>(cartridge->PRG.size()) / 0x4000;
   auto offset = index * 0x4000;
   if (offset < 0) {
-    offset += cartridge->PRG_len;
+    offset += static_cast<int>(cartridge->PRG.size());
   }
   return offset;
 }
 
-int Mapper1::chrBankOffset(int index) {
+int Mapper1::chrBankOffset(int index) const {
   if (index >= 0x80) {
     index -= 0x100;
   }
-  index %= cartridge->CHR_len / 0x1000;
+  index %= static_cast<int>(cartridge->CHR.size()) / 0x1000;
   auto offset = index * 0x1000;
   if (offset < 0) {
-    offset += cartridge->CHR_len;
+    offset += static_cast<int>(cartridge->CHR.size());
   }
   return offset;
 }

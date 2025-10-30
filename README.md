@@ -1,6 +1,6 @@
-# NesEmu
+# nes-emu
 
-An NES Emulator in C++11.
+An NES Emulator in C++17.
 
 ## Building
 
@@ -8,15 +8,15 @@ An NES Emulator in C++11.
 
 * Windows (MinGW-w64)
     ```
-    pacman -S mingw-w64-i686-cmake mingw-w64-i686-SDL2
+    pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-sdl3
     ```
 * Ubuntu
     ```
-    apt-get install cmake libsdl2-dev
+    apt-get install cmake libsdl3-dev
     ```
 * Mac OS X
     ```
-    brew install cmake sdl2
+    brew install cmake sdl3
     ```
 
 ### Compiling

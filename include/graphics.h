@@ -8,15 +8,20 @@ class Host;
 class Graphics
 {
 public:
-  Graphics(Host* host);
+  explicit Graphics(Host* host);
   ~Graphics();
+  
+  Graphics(const Graphics&) = delete;
+  Graphics& operator=(const Graphics&) = delete;
+  Graphics(Graphics&&) = delete;
+  Graphics& operator=(Graphics&&) = delete;
 
   void DrawFrame();
 
 private:
-  Host* host;
-  SDL_Texture *texture;
-  SDL_Renderer *renderer;
+  Host* host{nullptr};
+  SDL_Texture* texture{nullptr};
+  SDL_Renderer* renderer{nullptr};
 };
 
 #endif
