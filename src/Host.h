@@ -2,7 +2,7 @@
 #define _HOST_H
 
 #include "Config.h"
-#include "SDL2/SDL.h"
+#include "SDL3/SDL.h"
 
 class Console;
 class Audio;

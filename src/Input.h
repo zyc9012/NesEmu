@@ -1,7 +1,7 @@
 #ifndef _INPUT_H
 #define _INPUT_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 class Host;
 

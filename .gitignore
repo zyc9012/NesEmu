@@ -1,2 +1,37 @@
-.vscode/
+# Build directories
 build/
+cmake-build-*/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Compiled files
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# macOS
+.DS_Store
+*.dSYM/
+
+# ROM files (don't commit ROMs)
+*.nes
+*.bin
+
+# Saves and states
+*.sav
+*.state
+

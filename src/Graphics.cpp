@@ -6,9 +6,9 @@
 Graphics::Graphics(Host* host)
 {
   this->host = host;
-  renderer = SDL_CreateRenderer(host->window, -1, SDL_RENDERER_ACCELERATED);
+  renderer = SDL_CreateRenderer(host->window, nullptr);
   int w, h;
-  SDL_GetRendererOutputSize(renderer, &w, &h);
+  SDL_GetRenderOutputSize(renderer, &w, &h);
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, w, h);
   SDL_SetTextureScaleMode(texture, host->config->FilterMode);
 
@@ -32,6 +32,6 @@ void Graphics::DrawFrame()
   SDL_LockTexture(texture, NULL, &pixels, &pitch);
   memcpy(pixels, img->bytes, img->byte_len);
   SDL_UnlockTexture(texture);
-  SDL_RenderCopy(renderer, texture, NULL, NULL);
+  SDL_RenderTexture(renderer, texture, NULL, NULL);
   SDL_RenderPresent(renderer);
 }

@@ -14,10 +14,10 @@ Host::Host(Config* config)
   console->Reset();
 
   bool joystick_enabled = true;
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) < 0) {
+  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
     log("Failed to initialize SDL with joystick support. Retrying without.");
     joystick_enabled = false;
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
       log("Unable to initialize SDL: %s", SDL_GetError());
       return;
     }
@@ -30,7 +30,7 @@ Host::Host(Config* config)
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-  window = SDL_CreateWindow("NesEmu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 256, 240, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+  window = SDL_CreateWindow("NesEmu", 256, 240, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
   SDL_GL_SetSwapInterval(1);
 
@@ -59,27 +59,27 @@ void Host::Run()
 {
   bool quitRequested = false;
   Uint64 frameTimeLimit = Uint64(config->TimePerFrame * 1000);
-  Uint64 lastTicks = SDL_GetTicks64();
+  Uint64 lastTicks = SDL_GetTicks();
 
   while (true) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-      case SDL_QUIT:
+      case SDL_EVENT_QUIT:
         quitRequested = true;
         break;
-      case SDL_KEYDOWN:
-      case SDL_KEYUP:
+      case SDL_EVENT_KEY_DOWN:
+      case SDL_EVENT_KEY_UP:
         input->HandleKey(&event.key);
         break;
-      case SDL_JOYAXISMOTION:
+      case SDL_EVENT_JOYSTICK_AXIS_MOTION:
         input->HandleJoyAxis(&event.jaxis);
         break;
-      case SDL_JOYHATMOTION:
+      case SDL_EVENT_JOYSTICK_HAT_MOTION:
         input->HandleJoyHat(&event.jhat);
         break;
-      case SDL_JOYBUTTONDOWN:
-      case SDL_JOYBUTTONUP:
+      case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+      case SDL_EVENT_JOYSTICK_BUTTON_UP:
         input->HandleJoyButton(&event.jbutton);
         break;
       default:
@@ -93,11 +93,11 @@ void Host::Run()
 
     Step();
 
-    Uint64 elapsed = SDL_GetTicks64() - lastTicks;
+    Uint64 elapsed = SDL_GetTicks() - lastTicks;
     if (elapsed < frameTimeLimit) {
       SDL_Delay(frameTimeLimit - elapsed);
     }
-    lastTicks = SDL_GetTicks64();
+    lastTicks = SDL_GetTicks();
   }
 
   log("Shutting down...");

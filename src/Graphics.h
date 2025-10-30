@@ -1,7 +1,7 @@
 #ifndef _GRAPHICS_H
 #define _GRAPHICS_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 class Host;
 

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 #define FRAMES_PER_BUFFER 256
 
 class AudioRecorder;
@@ -21,6 +21,7 @@ private:
   int bufferPtr = 0;
   
   SDL_AudioDeviceID audioDev;
+  SDL_AudioStream* audioStream;
 
   AudioRecorder* recorder = nullptr;
 };

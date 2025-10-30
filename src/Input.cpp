@@ -8,16 +8,18 @@ Input::Input(Host* host)
 {
   this->host = host;
 
-  if (SDL_NumJoysticks() > 0) {
-    SDL_JoystickEventState(SDL_ENABLE);
-    joystick = SDL_JoystickOpen(0);
+  int num_joysticks;
+  SDL_JoystickID* joysticks = SDL_GetJoysticks(&num_joysticks);
+  if (num_joysticks > 0) {
+    joystick = SDL_OpenJoystick(joysticks[0]);
   }
+  SDL_free(joysticks);
 }
 
 Input::~Input()
 {
   if (joystick) {
-    SDL_JoystickClose(joystick);
+    SDL_CloseJoystick(joystick);
     joystick = NULL;
   }
 }
@@ -26,19 +28,19 @@ void Input::HandleKey(SDL_KeyboardEvent *key)
 {
   auto turbo = (host->console->PPU->Frame % 6) < 3;
   auto buttons = host->console->Controller1->buttons;
-  auto isDown = key->state == SDL_PRESSED;
+  auto isDown = key->down;
 
-  switch (key->keysym.sym) {
-    case SDLK_z:
+  switch (key->key) {
+    case SDLK_Z:
       buttons[ButtonA] = isDown;
       break;
-    case SDLK_a:
+    case SDLK_A:
       buttons[ButtonA] = turbo && isDown;
       break;
-    case SDLK_x:
+    case SDLK_X:
       buttons[ButtonB] = isDown;
       break;
-    case SDLK_s:
+    case SDLK_S:
       buttons[ButtonB] = turbo && isDown;
       break;
     case SDLK_RSHIFT:
@@ -143,7 +145,7 @@ void Input::HandleJoyHat(SDL_JoyHatEvent *hat)
 void Input::HandleJoyButton(SDL_JoyButtonEvent *button)
 {
   auto buttons = host->console->Controller1->buttons;
-  auto isDown = button->state == SDL_PRESSED;
+  auto isDown = button->down;
   auto turbo = (host->console->PPU->Frame % 6) < 3;
 
   switch (button->button) {

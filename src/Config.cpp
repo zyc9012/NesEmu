@@ -16,9 +16,9 @@ bool ParseCommandLine(Config& config, int argc, char** argv)
     }
     else if (strcmp("-f", argv[i]) == 0) {
       i++;
-      if (strcmp("nearest", argv[i]) == 0) config.FilterMode = SDL_ScaleModeNearest;
-      else if (strcmp("linear", argv[i]) == 0) config.FilterMode = SDL_ScaleModeLinear;
-      else if (strcmp("best", argv[i]) == 0) config.FilterMode = SDL_ScaleModeBest;
+      if (strcmp("nearest", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_NEAREST;
+      else if (strcmp("linear", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_LINEAR;
+      else if (strcmp("best", argv[i]) == 0) config.FilterMode = SDL_SCALEMODE_LINEAR; // "best" maps to linear in SDL3
       else log("Unknown filter mode, using \"linear\"");
     }
     i++;
